@@ -149,20 +149,6 @@ export default function ProfileScreen() {
           ))}
         </View>
 
-        {/* Appearance toggle */}
-        <TouchableOpacity onPress={handleToggleTheme} className="bg-card-light dark:bg-card-dark rounded-[20px] border border-border-light dark:border-border-dark overflow-hidden mb-4 active:opacity-70 shadow-[0_4px_16px_rgba(15,23,42,0.05)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.35)]" testID="theme-toggle" data-cy="profile-theme-toggle">
-          <View className="flex-row items-center p-4">
-            <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#f59e0b12' }}>
-              {isDark ? <Moon size={16} color="#f59e0b" strokeWidth={1.8} /> : <Sun size={16} color="#f59e0b" strokeWidth={1.8} />}
-            </View>
-            <View className="flex-1 ml-4">
-              <Text className="text-text-primary dark:text-text-primary-dark text-[15px] font-light tracking-tight">Appearance</Text>
-              <Text className="text-text-secondary-light dark:text-text-secondary-dark text-[11px] font-light">{isDark ? 'Dark' : 'Light'} mode</Text>
-            </View>
-            <Text className="text-accent-amber text-[12px] font-semibold">{isDark ? 'Dark' : 'Light'}</Text>
-          </View>
-        </TouchableOpacity>
-
         {/* Logout */}
         <TouchableOpacity onPress={handleLogout} className="flex-row items-center justify-center bg-danger/10 border border-danger/15 rounded-[20px] p-5 active:opacity-80" data-cy="profile-logout">
           <LogOut size={16} color="#ef4444" strokeWidth={1.8} />
