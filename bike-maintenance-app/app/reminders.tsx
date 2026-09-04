@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useResponsive } from '@/lib/hooks/useResponsive';
 
 export default function RemindersScreen() {
-  const { isMobile } = useResponsive();
+  useResponsive(); // Hook active for future responsive layout changes
   const [reminders] = useState([
     { id: 1, title: 'Oil Change', due: 'In 200 km', type: 'service', icon: Wrench },
     { id: 2, title: 'Chain Lube', due: 'In 500 km', type: 'service', icon: Wrench },

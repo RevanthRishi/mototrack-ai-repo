@@ -19,7 +19,14 @@ export default function ProfileScreen() {
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Log Out', style: 'destructive', onPress: async () => { await signOut(); router.replace('/(auth)/login'); } },
+      { text: 'Log Out', style: 'destructive', onPress: async () => {
+        try {
+          await signOut();
+        } catch (e) {
+          console.error('Logout error:', e);
+        }
+        router.replace('/(auth)/login');
+      }},
     ]);
   };
 

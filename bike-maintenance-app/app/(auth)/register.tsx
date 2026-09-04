@@ -13,6 +13,8 @@ import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 
 import { RegisterFormData, registerSchema } from '@/lib/utils/validation';
 import { signUpWithEmail } from '@/lib/utils/auth';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import { useGoogleSignIn } from '@/lib/hooks/useGoogleSignIn';
 
 
 export default function RegisterScreen() {
@@ -20,6 +22,7 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { loading: googleLoading, trigger: triggerGoogle } = useGoogleSignIn();
 
   const { control, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -144,6 +147,9 @@ export default function RegisterScreen() {
                 {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-white text-center text-base font-bold tracking-wide">Create Account</Text>}
               </LinearGradient>
             </TouchableOpacity>
+
+            {/* Google Sign In */}
+            <GoogleSignInButton label="Sign up with Google" loading={googleLoading} onPress={triggerGoogle} />
           </Animated.View>
 
           {/* Divider */}

@@ -481,6 +481,7 @@ export type Database = {
       }
       users: {
         Row: {
+          avatar_url: string | null
           country_code: string | null
           created_at: string
           currency: string | null
@@ -496,6 +497,7 @@ export type Database = {
           volume_unit: string | null
         }
         Insert: {
+          avatar_url?: string | null
           country_code?: string | null
           created_at?: string
           currency?: string | null
@@ -511,6 +513,7 @@ export type Database = {
           volume_unit?: string | null
         }
         Update: {
+          avatar_url?: string | null
           country_code?: string | null
           created_at?: string
           currency?: string | null

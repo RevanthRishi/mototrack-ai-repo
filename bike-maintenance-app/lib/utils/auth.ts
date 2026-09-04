@@ -1,5 +1,7 @@
+import { Platform } from 'react-native';
 import { supabase } from '@/lib/supabase/client';
 import { AuthError, Session, User } from '@supabase/supabase-js';
+import { upsertUserProfile } from './users';
 
 export interface AuthResponse {
   user: User | null;
@@ -41,14 +43,13 @@ export async function signUpWithEmail(
     },
   });
 
-  // Create user profile after signup
+  // Profile row is best-effort; don't block auth on DB errors.
   if (data.user && !error) {
-    // Auto-create user profile row on signup (RLS allows own id)
-    await supabase.from('users' as never).insert([{
+    await upsertUserProfile({
       id: data.user.id,
-      email: data.user.email!,
-      full_name: fullName || null,
-    }] as never);
+      email: data.user.email ?? '',
+      fullName: fullName ?? null,
+    });
   }
 
   return {
@@ -56,6 +57,35 @@ export async function signUpWithEmail(
     session: data.session,
     error,
   };
+}
+
+/**
+ * Sign in with Google OAuth.
+ * After the redirect, the auth state listener (root layout) receives the session
+ * and upserts the user profile with Google metadata (full_name, avatar_url).
+ * This function returns immediately after launching the OAuth flow.
+ */
+export async function signInWithGoogle(): Promise<AuthResponse> {
+  const isWeb = Platform.OS === 'web';
+  // Safe window access — cast to { location?: { origin?: string } } to avoid
+  // TS "window not defined" and "Window missing location" errors in non-dom lib.
+  type WindowLike = { location?: { origin?: string } };
+  const origin: string = isWeb
+    ? ((globalThis as unknown as WindowLike).location?.origin ?? '')
+    : '';
+
+  const redirectTo = isWeb ? `${origin}/(tabs)` : 'mototrack://(tabs)';
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo,
+      skipBrowserRedirect: !isWeb,
+      queryParams: { prompt: 'select_account' },
+    },
+  });
+
+  return { user: null, session: null, error };
 }
 
 /**

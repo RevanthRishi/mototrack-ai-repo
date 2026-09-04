@@ -15,6 +15,8 @@ import { LoginFormData, loginSchema } from '@/lib/utils/validation';
 
 import { authenticateWithBiometrics, checkBiometricCapabilities, getBiometricTypeName } from '@/lib/security/biometric';
 import { signInWithEmail } from '@/lib/utils/auth';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import { useGoogleSignIn } from '@/lib/hooks/useGoogleSignIn';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -22,6 +24,7 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricType, setBiometricType] = useState<string>('');
+  const { loading: googleLoading, trigger: triggerGoogle } = useGoogleSignIn();
 
   const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -137,6 +140,9 @@ export default function LoginScreen() {
               </TouchableOpacity>
             )}
           </Animated.View>
+
+          {/* Google Sign In */}
+          <GoogleSignInButton loading={googleLoading} onPress={triggerGoogle} />
 
           {/* Divider */}
           <View className="flex-row items-center my-6">

@@ -77,6 +77,7 @@
 - Write comments explaining **why** an unusual solution was chosen, not **what** standard code does.
 - Single responsibility principle for all helper functions in `lib/utils/` and `lib/calculations/`.
 - Maintain test coverage for fuel calculations, service interval math, and symptom mapping.
+- **DRY / Coding Standards:** see `docs/CODING_STANDARDS.md` — covers shared DB helpers, auth hook/button separation, type-safe Supabase queries, `globalThis` casting rules, and auth-flow profile-sync placement.
 
 ## AI Agent Instructions
 When modifying or extending this codebase:
