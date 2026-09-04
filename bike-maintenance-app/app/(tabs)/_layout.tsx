@@ -1,11 +1,10 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Tabs } from 'expo-router';
 import { useTheme } from '@/lib/stores/themeStore';
 import { supabase } from '@/lib/supabase/client';
 import { COLORS, getColors } from '@/lib/theme/theme';
 import { Home, Fuel, Wrench, Bot, User, Sun, Moon } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } from 'react-native-reanimated';
 
 const TABS = [
   { name: 'index', title: 'Garage', Icon: Home },
@@ -18,11 +17,8 @@ const TABS = [
 export default function TabLayout() {
   const { isDark, toggle } = useTheme();
   const c = getColors(isDark);
-  const flash = useSharedValue(0);
 
   const handleToggleTheme = async () => {
-    // Quick fade-flash animation
-    flash.value = withSequence(withTiming(0.25, { duration: 120 }), withTiming(0, { duration: 120 }));
     toggle();
     supabase.auth.getUser().then(({ data }) => {
       if (data.user?.id) {
@@ -32,10 +28,6 @@ export default function TabLayout() {
       }
     });
   };
-
-  const flashStyle = useAnimatedStyle(() => ({
-    opacity: 1 - flash.value,
-  }));
 
   return (
     <View className="flex-1">

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { LogOut, Bell, Shield, HelpCircle, Crown, ChevronRight, Sun, Moon, X } from 'lucide-react-native';
+import { LogOut, Bell, Shield, HelpCircle, Crown, ChevronRight, X } from 'lucide-react-native';
 import { signOut } from '@/lib/utils/auth';
 import { useTheme } from '@/lib/stores/themeStore';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { supabase } from '@/lib/supabase/client';
+import { getUserProfile } from '@/lib/supabase/queries';
+import { LoadingState } from '@/components/ui/LoadingState';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemedGradient, useThemedSheen, useChromeRibbon, THEME_GRADIENTS } from '@/lib/hooks/useThemedGradient';
@@ -19,10 +21,22 @@ const SETTINGS = [
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { isDark, toggle } = useTheme();
-  const { reset, user } = useAuth();
+  const { isDark } = useTheme();
+  const { user, reset } = useAuth();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ['user_profile', user?.id],
+    queryFn: () => (user?.id ? getUserProfile(user.id) : Promise.resolve(null)),
+    enabled: !!user?.id,
+  });
+
+  const displayName = profile?.full_name ?? 'Guest User';
+  const displayEmail = profile?.email ?? 'user@mototrack.app';
+  const memberSince = profile?.created_at
+    ? new Date(profile.created_at).toLocaleString('default', { month: 'short', year: 'numeric' })
+    : 'Sep 2026';
 
   const heroGradient = useThemedGradient(THEME_GRADIENTS.heroProfile.light, THEME_GRADIENTS.heroProfile.dark);
   const sheen = useThemedSheen('violet');
@@ -54,17 +68,6 @@ export default function ProfileScreen() {
     router.replace('/(auth)/login');
   };
 
-  const handleToggleTheme = () => {
-    toggle();
-    const next = !isDark;
-    if (user?.id) {
-      supabase.from('users').update({ theme_dark: next }).eq('id', user.id)
-        .then(({ error }) => {
-          if (error) console.warn('[theme] DB sync failed', error.message);
-        });
-    }
-  };
-
   const handleLogout = () => {
     console.log('[LOGOUT] handleLogout called');
     setConfirmOpen(true);
@@ -94,14 +97,14 @@ export default function ProfileScreen() {
                 </View>
                 <View className="flex-1">
                   <View className="flex-row items-center gap-2.5">
-                    <Text className="text-text-primary dark:text-text-primary-dark text-xl font-light tracking-tight">Guest User</Text>
+                    <Text className="text-text-primary dark:text-text-primary-dark text-xl font-light tracking-tight">{displayName}</Text>
                     <View className="bg-accent-amber/10 border border-accent-amber/20 px-2 py-0.5 rounded-full flex-row items-center gap-1">
                       <Crown size={9} color="#f59e0b" strokeWidth={2} />
                       <Text className="text-accent-amber text-[9px] font-bold uppercase tracking-[0.15em]">Free</Text>
                     </View>
                   </View>
-                  <Text className="text-text-muted-light dark:text-text-muted-dark text-[13px] font-light">user@mototrack.app</Text>
-                  <Text className="text-text-secondary-light dark:text-text-secondary-dark text-[11px] font-light mt-1">2 vehicles · Member since Sep 2026</Text>
+                  <Text className="text-text-muted-light dark:text-text-muted-dark text-[13px] font-light">{displayEmail}</Text>
+                  <Text className="text-text-secondary-light dark:text-text-secondary-dark text-[11px] font-light mt-1">2 vehicles · Member since {memberSince}</Text>
                 </View>
 
                 {/* Upgrade — right end of user row */}

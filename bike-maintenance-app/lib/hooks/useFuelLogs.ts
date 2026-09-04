@@ -1,92 +1,22 @@
-import { useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase/client';
-import { FuelLogRow, FuelLogInsert, FuelLogUpdate } from '@/lib/types';
+import { useAuth } from './useAuth';
 
-export interface UseFuelLogsReturn {
-  logs: FuelLogRow[];
-  loading: boolean;
-  error: string | null;
-  refresh: () => Promise<void>;
-  addLog: (data: FuelLogInsert) => Promise<FuelLogRow | null>;
-  updateLog: (id: string, data: FuelLogUpdate) => Promise<FuelLogRow | null>;
-  deleteLog: (id: string) => Promise<boolean>;
-}
-
-export function useFuelLogs(vehicleId: string | null): UseFuelLogsReturn {
-  const [logs, setLogs] = useState<FuelLogRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const refresh = useCallback(async () => {
-    if (!vehicleId) {
-      setLogs([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error: err } = await supabase
-        .from('fuel_logs' as never)
-        .select('*')
-        .eq('vehicle_id', vehicleId)
+export function useFuelLogs() {
+  const { user } = useAuth();
+  const { data = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['fuel_logs', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from('fuel_logs')
+        .select('id, date, liters, cost, odometer, notes')
+        .eq('user_id', user.id)
         .order('date', { ascending: false });
-      if (err) throw err;
-      setLogs((data || []) as FuelLogRow[]);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to load fuel logs');
-    } finally {
-      setLoading(false);
-    }
-  }, [vehicleId]);
-
-  const addLog = useCallback(async (data: FuelLogInsert): Promise<FuelLogRow | null> => {
-    setError(null);
-    try {
-      const { data: result, error: err } = await supabase
-        .from('fuel_logs' as never)
-        .insert(data as never)
-        .select()
-        .single();
-      if (err) throw err;
-      await refresh();
-      return result as FuelLogRow;
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to add fuel log');
-      return null;
-    }
-  }, [refresh]);
-
-  const updateLog = useCallback(async (id: string, data: FuelLogUpdate): Promise<FuelLogRow | null> => {
-    setError(null);
-    try {
-      const { data: result, error: err } = await supabase
-        .from('fuel_logs' as never)
-        .update(data as never)
-        .eq('id', id)
-        .select()
-        .single();
-      if (err) throw err;
-      await refresh();
-      return result as FuelLogRow;
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to update fuel log');
-      return null;
-    }
-  }, [refresh]);
-
-  const deleteLog = useCallback(async (id: string): Promise<boolean> => {
-    setError(null);
-    try {
-      const { error: err } = await supabase.from('fuel_logs' as never).delete().eq('id', id);
-      if (err) throw err;
-      await refresh();
-      return true;
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to delete fuel log');
-      return false;
-    }
-  }, [refresh]);
-
-  return { logs, loading, error, refresh, addLog, updateLog, deleteLog };
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!user?.id,
+  });
+  return { logs: data, loading: isLoading, error: error instanceof Error ? error.message : null, refresh: refetch };
 }
