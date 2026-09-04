@@ -32,7 +32,9 @@ module.exports = {
         },
         surface: {
           dark: '#0b0c15',
+          light: '#f8f9fc',
           card: '#13131f',
+          cardLight: '#ffffff',
           elevated: '#1a1a2e',
           border: 'rgba(255,255,255,0.08)',
         }

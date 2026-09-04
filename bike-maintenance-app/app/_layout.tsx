@@ -1,10 +1,12 @@
 import '../global.css';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 import { Slot, SplashScreen, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { useThemeStore } from '@/lib/stores/themeStore';
 
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +26,7 @@ function RootLayoutNav() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const segments = useSegments();
+  const isDark = useThemeStore((s) => s.isDark);
 
   useEffect(() => {
     if (loading) return;
@@ -35,7 +38,11 @@ function RootLayoutNav() {
     }
   }, [user, loading, segments, router]);
 
-  return <Slot />;
+  return (
+    <View className={`flex-1 ${isDark ? 'dark' : ''}`}>
+      <Slot />
+    </View>
+  );
 }
 
 export default function RootLayout() {

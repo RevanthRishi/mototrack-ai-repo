@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { LogOut, Bell, Shield, HelpCircle, Crown, ChevronRight } from 'lucide-react-native';
+import { LogOut, Bell, Shield, HelpCircle, Crown, ChevronRight, Sun, Moon } from 'lucide-react-native';
 import { signOut } from '@/lib/utils/auth';
+import { useTheme } from '@/lib/stores/themeStore';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -15,6 +16,7 @@ const SETTINGS = [
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { isDark, toggle } = useTheme();
 
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -110,6 +112,20 @@ export default function ProfileScreen() {
             </View>
             <ChevronRight size={15} color="#f59e0b" strokeWidth={1.5} />
           </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Appearance toggle */}
+        <TouchableOpacity onPress={toggle} className="bg-[#0d0d18] rounded-[20px] border border-white/[0.06] overflow-hidden mb-4 active:opacity-70" testID="theme-toggle">
+          <View className="flex-row items-center p-4">
+            <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: '#f59e0b12' }}>
+              {isDark ? <Moon size={16} color="#f59e0b" strokeWidth={1.8} /> : <Sun size={16} color="#f59e0b" strokeWidth={1.8} />}
+            </View>
+            <View className="flex-1 ml-4">
+              <Text className="text-white text-[15px] font-light tracking-tight">Appearance</Text>
+              <Text className="text-[#6b6b80] text-[11px] font-light">{isDark ? 'Dark' : 'Light'} mode</Text>
+            </View>
+            <Text className="text-[#f59e0b] text-[12px] font-semibold">{isDark ? 'Dark' : 'Light'}</Text>
+          </View>
         </TouchableOpacity>
 
         {/* Logout */}
