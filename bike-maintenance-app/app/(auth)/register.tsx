@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 
 import { RegisterFormData, registerSchema } from '@/lib/utils/validation';
+import { signUpWithEmail } from '@/lib/utils/auth';
 
 
 export default function RegisterScreen() {
@@ -20,18 +21,21 @@ export default function RegisterScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { control, formState: { errors } } = useForm<RegisterFormData>({
+  const { control, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: { email: '', password: '', confirmPassword: '', fullName: '' },
   });
 
-  // TODO: Wire to signUpWithEmail after smoke test
-  const onRegisterPress = async () => {
+  const onRegisterPress = async (data: RegisterFormData) => {
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 800));
+    const { error } = await signUpWithEmail(data.email, data.password, data.fullName);
+    setIsLoading(false);
+    if (error) {
+      Alert.alert('Sign up failed', error.message);
+      return;
+    }
     Alert.alert('Success!', 'Account created.', [{ text: 'OK', onPress: () => router.replace('/(tabs)') }]);
   };
-  void onRegisterPress;
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
@@ -135,7 +139,7 @@ export default function RegisterScreen() {
             </Text>
 
             {/* Register Button */}
-            <TouchableOpacity onPress={() => { setIsLoading(true); setTimeout(() => router.replace('/(tabs)'), 600); }} disabled={isLoading} className="mt-3 active:opacity-90">
+            <TouchableOpacity onPress={handleSubmit(onRegisterPress)} disabled={isLoading} className="mt-3 active:opacity-90">
               <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-[18px] py-[14px] shadow-[0_8px_30px_rgba(139,124,246,0.35)]">
                 {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-white text-center text-base font-bold tracking-wide">Create Account</Text>}
               </LinearGradient>

@@ -14,6 +14,7 @@ import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { LoginFormData, loginSchema } from '@/lib/utils/validation';
 
 import { authenticateWithBiometrics, checkBiometricCapabilities, getBiometricTypeName } from '@/lib/security/biometric';
+import { signInWithEmail } from '@/lib/utils/auth';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function LoginScreen() {
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricType, setBiometricType] = useState<string>('');
 
-  const { control, formState: { errors } } = useForm<LoginFormData>({
+  const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
@@ -34,13 +35,16 @@ export default function LoginScreen() {
     });
   }, []);
 
-  // TODO: Wire to signInWithEmail after smoke test
-  const onLoginPress = async () => {
+  const onLoginPress = async (data: LoginFormData) => {
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 800)); // Fake loading
+    const { error } = await signInWithEmail(data.email, data.password);
+    setIsLoading(false);
+    if (error) {
+      Alert.alert('Sign in failed', error.message);
+      return;
+    }
     router.replace('/(tabs)');
   };
-  void onLoginPress;
 
   const handleBiometricLogin = async () => {
     const result = await authenticateWithBiometrics('Log in to MotoTrack AI');
@@ -115,7 +119,7 @@ export default function LoginScreen() {
 
             {/* Login */}
             <TouchableOpacity
-              onPress={() => { setIsLoading(true); setTimeout(() => router.replace('/(tabs)'), 600); }} disabled={isLoading}
+              onPress={handleSubmit(onLoginPress)} disabled={isLoading}
               className="mt-3 active:opacity-90"
             >
               <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-[20px] py-[14px] shadow-[0_8px_30px_rgba(139,124,246,0.35)]">
