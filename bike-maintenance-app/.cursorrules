@@ -1,0 +1,86 @@
+# Bike Maintenance & AI Mechanic App - AI Coding Rules
+
+## Project Context
+- **App Name**: MotoTrack AI / RideMate (Bike Maintenance & Smart Vehicle Health Tracker)
+- **Type**: Universal Cross-Platform Mobile & Web App (iOS, Android, Web)
+- **Framework**: Expo SDK 52+ with React Native
+- **Language**: TypeScript (strict mode enabled)
+- **Backend**: Supabase (PostgreSQL 16, Auth, Storage, Edge Functions)
+- **AI Integration**: Claude 3.5 Sonnet / Haiku via Vercel AI SDK
+- **Core Purpose**: Comprehensive bike maintenance tracking, fuel/mileage analytics, predictive maintenance alerts, and an AI Pocket Mechanic diagnostic assistant.
+
+## Core Architecture Principles
+
+### 1. File-Based Routing (Expo Router)
+- All screens live in `app/` directory
+- Group routes using parentheses:
+  - `app/(auth)/` — login, register, onboarding
+  - `app/(tabs)/` — garage (home), fuel-log, service-history, ai-mechanic, profile
+- Dynamic routes use square brackets:
+  - `app/vehicle/[id].tsx` — vehicle details & health overview
+  - `app/vehicle/add.tsx` — add new motorcycle/scooter
+  - `app/service/add.tsx` — log service / maintenance event
+  - `app/fuel/add.tsx` — log fuel refill
+- Universal deep linking is handled by Expo Router.
+
+### 2. Type Safety & Zero Guessing
+- **Strict TypeScript**: Never use `any`. Use typed interfaces and Zod schemas.
+- **Supabase Auto-Generated Types**: In `lib/supabase/database.types.ts`.
+- Always import database types: `import { Database } from '@/lib/supabase/database.types';`
+- Validate all user forms with `zod` and `react-hook-form`.
+
+### 3. Financial & Mileage Calculations (Zero Calculation Glitches)
+- Use `decimal.js` for fuel cost, total expense calculations, and precise mileage (km/l or MPG) figures.
+- Never rely on standard JavaScript floating point for cumulative cost calculations.
+- Round currency to 2 decimal places (`.toDecimalPlaces(2)`), mileage to 2 decimal places (`.toDecimalPlaces(2)`).
+
+### 4. Component Structure & Modularity
+- **Max 200 lines per component**: Split UI into focused, atomic subcomponents.
+- Directory organization:
+  - `components/ui/` — Base primitives (Button, Input, Card, Badge, Modal, DatePicker)
+  - `components/features/` — Domain components (VehicleCard, FuelLogItem, ServiceTimeline, MileageChart)
+  - `components/ai/` — AI Mechanic components (DiagnosticChat, SymptomSelector, RepairCostEstimator)
+  - `components/layout/` — Screen wrappers, SafeView, Header, TabBar
+- Use functional components with hooks only.
+
+### 5. Data Fetching & Caching Strategy
+- **TanStack Query (React Query v5)** for all server data fetching, mutations, and offline cache invalidation.
+- **Zustand** strictly for client-only state (selected active vehicle, filter state, theme preference).
+- Optimistic updates for fuel and service logging to ensure instant snappy UI.
+
+### 6. Supabase & Database Rules
+- All client queries use `lib/supabase/client.ts`.
+- **Row Level Security (RLS) is strictly enforced on all tables** (`vehicles`, `fuel_logs`, `service_logs`, `reminders`, `ai_diagnostics`).
+- Client code must never bypass RLS.
+- Heavy / secure logic (AI diagnostic proxy, receipt OCR, scheduled reminder pushes) runs in Supabase Edge Functions.
+
+### 7. AI Pocket Mechanic Design
+- The AI Mechanic analyzes symptoms, error codes, and maintenance history to provide:
+  1. Top probable root causes.
+  2. Severity indicator (Safe to ride vs Immediate attention required).
+  3. Estimated repair/parts cost range (preventing mechanic overcharging).
+  4. DIY vs Professional Mechanic recommendation.
+- Never pass raw PII (user email, phone, location) to the AI prompt; only vehicle specs and symptoms.
+
+### 8. Styling Standards (NativeWind v4)
+- Use Tailwind CSS utility classes via NativeWind (`className="..."`).
+- Mobile-first, responsive design supporting dark and light themes seamlessly.
+- Extract common styles or design tokens into `tailwind.config.js`.
+
+### 9. Error Handling & Sentry Monitoring
+- Wrap asynchronous operations in clean try-catch blocks.
+- Capture unhandled exceptions with Sentry including feature tags.
+- Provide friendly, actionable feedback to users rather than raw errors.
+
+## Code Quality Standards
+- Self-documenting code with clear variable and function naming.
+- Write comments explaining **why** an unusual solution was chosen, not **what** standard code does.
+- Single responsibility principle for all helper functions in `lib/utils/` and `lib/calculations/`.
+- Maintain test coverage for fuel calculations, service interval math, and symptom mapping.
+
+## AI Agent Instructions
+When modifying or extending this codebase:
+1. Review `docs/architecture/ARCHITECTURE.md` and `docs/database/SCHEMA.md` first.
+2. If schema changes, update SQL migrations and run `npm run types:supabase`.
+3. Verify changes with `npm test` and `npm run type-check`.
+4. Keep the codebase modular, clean, and ready for future autonomous maintenance.
