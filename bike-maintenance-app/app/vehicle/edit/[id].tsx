@@ -9,15 +9,15 @@ export default function EditVehicleScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#06060f]">
+    <SafeAreaView className="flex-1 bg-canvas-dark">
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-7 pt-6">
-        <Button variant="ghost" size="sm" onPress={() => router.back()} leftIcon={<ArrowLeft size={16} color="#8b8fa3" />} className="mb-4 self-start">Back</Button>
+        <Button variant="ghost" size="sm" onPress={() => router.back()} leftIcon={<ArrowLeft size={16} color="#8b8fa3" />} className="mb-4 self-start" data-cy="edit-vehicle-back">Back</Button>
         <Text className="text-white text-3xl font-light tracking-tight mb-6">Edit Vehicle</Text>
 
-        <View className="bg-[#0d0d18] rounded-[22px] border border-white/[0.06] p-5 mb-6">
-          <Text className="text-[#6b6b80] text-[10px] font-semibold uppercase tracking-[0.25em] mb-3">Current Vehicle</Text>
+        <View className="bg-card-light dark:bg-card-dark rounded-[22px] border border-white/[0.06] p-5 mb-6">
+          <Text className="text-text-secondary-dark dark:text-text-secondary-light text-[10px] font-semibold uppercase tracking-[0.25em] mb-3">Current Vehicle</Text>
           <Text className="text-white text-lg font-light">Yamaha R15 V4</Text>
-          <Text className="text-[#6b6b80] text-sm font-light mt-0.5">2024 · 18,230 km</Text>
+          <Text className="text-text-secondary-dark dark:text-text-secondary-light text-sm font-light mt-0.5">2024 · 18,230 km</Text>
         </View>
 
         <Input label="Odometer Reading" placeholder="18,230 km" keyboardType="numeric" defaultValue="18,230" />
@@ -25,8 +25,8 @@ export default function EditVehicleScreen() {
         <Input label="Registration Number" placeholder="ABC 1234" />
 
         <View className="flex-row gap-3 mt-6">
-          <Button variant="danger" className="flex-1">Delete</Button>
-          <Button variant="primary" className="flex-1">Save Changes</Button>
+          <Button variant="danger" className="flex-1" data-cy="edit-vehicle-delete">Delete</Button>
+          <Button variant="primary" className="flex-1" data-cy="edit-vehicle-save">Save Changes</Button>
         </View>
 
         <View className="h-12" />

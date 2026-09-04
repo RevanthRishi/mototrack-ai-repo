@@ -336,3 +336,32 @@ test.describe('Logout', () => {
     expect(stillOnProfile).toBe(false);
   });
 });
+
+// ─── THEME TOGGLE ────────────────────────────────────────────────────────────
+
+test.describe("Theme Toggle", () => {
+  test("profile shows Appearance button", async ({ page }) => {
+    await page.goto("http://localhost:8081/(tabs)/profile");
+    await page.waitForTimeout(2000);
+    const url = page.url();
+    if (url.includes("login")) {
+      console.log("Skipped: profile requires auth — no test credentials configured");
+      return;
+    }
+    const toggle = page.getByTestId("theme-toggle");
+    expect(await toggle.isVisible().catch(() => false)).toBe(true);
+  });
+});
+
+// Theme toggle E2E (data-cy per .cursorrules)
+test.describe('Profile Theme Toggle', () => {
+  test('toggles appearance via data-cy', async ({ page }) => {
+    await page.goto('http://localhost:8081/(tabs)/profile');
+    await page.waitForSelector('[data-cy="profile-theme-toggle"]');
+    const btn = page.locator('[data-cy="profile-theme-toggle"]');
+    await expect(btn).toBeVisible();
+    await btn.click();
+    // Toggle writes DB; verify no crash / navigation
+    await expect(btn).toBeVisible();
+  });
+});

@@ -13,17 +13,17 @@ export default function RemindersScreen() {
   ]);
 
   return (
-    <ScrollView className="flex-1 bg-[#06060f] px-5 pt-6" contentContainerClassName="pb-10">
+    <ScrollView className="flex-1 bg-canvas-light dark:bg-canvas-dark px-5 pt-6" contentContainerClassName="pb-10">
       <LinearGradient colors={['#8b7cf6', '#6d5ae6']} className="rounded-3xl p-6 mb-6 shadow-[0_8px_30px_rgba(139,124,246,0.3)]">
         <Bell size={28} color="#fff" strokeWidth={1.5} />
         <Text className="text-white text-xl font-extrabold mt-3">Reminders</Text>
-        <Text className="text-[#d6d6e6] text-sm mt-1">Odometer-based service alerts</Text>
+        <Text className="text-text-secondary-dark text-sm mt-1">Odometer-based service alerts</Text>
       </LinearGradient>
       {reminders.map(r => (
-        <TouchableOpacity key={r.id} className="bg-[#161625] rounded-2xl p-4 mb-3 border border-[#23233a] active:opacity-90">
+        <TouchableOpacity key={r.id} className="bg-card-light dark:bg-card-dark rounded-2xl p-4 mb-3 border border-card-elevated active:opacity-90" data-cy={`reminder-item-${r.id}`}>
           <View className="flex-row items-center gap-3">
-            <View className="bg-[#8b7cf6]/10 p-2.5 rounded-xl"><r.icon size={18} color="#8b7cf6" strokeWidth={1.5} /></View>
-            <View className="flex-1"><Text className="text-white font-semibold">{r.title}</Text><Text className="text-[#9ca3af] text-xs">{r.due}</Text></View>
+            <View className="bg-accent-violet/10 p-2.5 rounded-xl"><r.icon size={18} color="#8b7cf6" strokeWidth={1.5} /></View>
+            <View className="flex-1"><Text className="text-white font-semibold">{r.title}</Text><Text className="text-text-muted-light dark:text-text-muted-dark text-xs">{r.due}</Text></View>
             <Clock size={16} color="#6b6e80" />
           </View>
         </TouchableOpacity>

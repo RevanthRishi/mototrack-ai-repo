@@ -1,6 +1,5 @@
 import '../global.css';
 import { useEffect } from 'react';
-import { View } from 'react-native';
 import { Slot, SplashScreen, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -26,7 +25,6 @@ function RootLayoutNav() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const segments = useSegments();
-  const isDark = useThemeStore((s) => s.isDark);
 
   useEffect(() => {
     if (loading) return;
@@ -38,18 +36,15 @@ function RootLayoutNav() {
     }
   }, [user, loading, segments, router]);
 
-  return (
-    <View className={`flex-1 ${isDark ? 'dark' : ''}`}>
-      <Slot />
-    </View>
-  );
+  return <Slot />;
 }
 
 export default function RootLayout() {
+  const isDark = useThemeStore((s) => s.isDark);
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }} className={isDark ? 'dark' : ''}>
       <QueryClientProvider client={queryClient}>
-        <StatusBar style="auto" />
+        <StatusBar style={isDark ? 'light' : 'dark'} />
         <RootLayoutNav />
       </QueryClientProvider>
     </GestureHandlerRootView>

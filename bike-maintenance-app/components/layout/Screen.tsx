@@ -9,7 +9,7 @@ interface ScreenProps extends ViewProps {
 
 export function Screen({ children, className, ...props }: ScreenProps) {
   return (
-    <SafeAreaView className={`flex-1 bg-[#06060f] ${className ?? ''}`} {...props}>
+    <SafeAreaView className={`flex-1 bg-canvas-light dark:bg-canvas-dark ${className ?? ''}`} {...props}>
       {children}
     </SafeAreaView>
   );

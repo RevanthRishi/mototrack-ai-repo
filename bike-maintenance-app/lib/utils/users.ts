@@ -8,6 +8,7 @@ export interface CreateUserProfileInput {
   email: string;
   fullName?: string | null;
   avatarUrl?: string | null;
+  themeDark?: boolean | null;
 }
 
 /**
@@ -21,9 +22,15 @@ export function buildUserProfileInsert(input: CreateUserProfileInput): UserInser
     email: input.email,
     full_name: input.fullName ?? null,
     avatar_url: input.avatarUrl ?? null,
+    theme_dark: input.themeDark ?? true,
   };
 }
 
+/**
+ * Upsert a public.users row for the given auth user.
+ * Silently no-ops on failure — profile rows are best-effort and RLS-protected;
+ * the auth flow must not be blocked by a profile write.
+ */
 /**
  * Upsert a public.users row for the given auth user.
  * Silently no-ops on failure — profile rows are best-effort and RLS-protected;

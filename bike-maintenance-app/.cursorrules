@@ -79,6 +79,10 @@
 - Maintain test coverage for fuel calculations, service interval math, and symptom mapping.
 - **DRY / Coding Standards:** see `docs/CODING_STANDARDS.md` — covers shared DB helpers, auth hook/button separation, type-safe Supabase queries, `globalThis` casting rules, and auth-flow profile-sync placement.
 
+## Playwright / E2E Testing — data-cy Attributes (MANDATORY)
+
+Every interactive element (button, input, link, touchable, toggle) that Playwright or automation could target MUST have a descriptive `data-cy` attribute. Naming convention: `<context>-<intent>` — e.g., `login-submit`, `register-toggle-password`, `home-add-vehicle`, `fuel-log-item-1`, `service-timeline-item-2`, `profile-logout`, `ai-send-message`. Never rely on `testID`, utility spacing classes (`pds-mb-4`), or text-content matching as the primary selector. Before committing any change, verify every new interactive element has a matching `data-cy`. See `e2e/auth.spec.js` for reference selectors.
+
 ## AI Agent Instructions
 When modifying or extending this codebase:
 1. Review `docs/architecture/ARCHITECTURE.md` and `docs/database/SCHEMA.md` first.

@@ -45,7 +45,7 @@ export async function signUpWithEmail(
 
   // Profile row is best-effort; don't block auth on DB errors.
   if (data.user && !error) {
-    await upsertUserProfile({
+    upsertUserProfile({
       id: data.user.id,
       email: data.user.email ?? '',
       fullName: fullName ?? null,

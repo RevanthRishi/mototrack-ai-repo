@@ -72,12 +72,12 @@ export function Button({
       <TouchableOpacity
         activeOpacity={0.85}
         disabled={isDisabled}
-        className={`rounded-2xl border border-white/[0.06] bg-[#0d0d18] ${s.py} ${s.px} ${isDisabled ? 'opacity-50' : ''} ${className ?? ''}`}
+        className={`rounded-2xl border border-borderSubtle-light dark:border-borderSubtle-dark bg-card-light dark:bg-card-dark ${s.py} ${s.px} ${isDisabled ? 'opacity-50' : ''} ${className ?? ''}`}
         {...props}
       >
         <View className="flex-row items-center justify-center">
           {leftIcon && <View className="mr-2.5">{leftIcon}</View>}
-          <Text className={`text-white font-light ${s.text} tracking-tight`}>{children}</Text>
+          <Text className={`text-text-primary-light dark:text-text-primary-dark font-light ${s.text} tracking-tight`}>{children}</Text>
           {rightIcon && <View className="ml-2.5">{rightIcon}</View>}
         </View>
       </TouchableOpacity>
@@ -89,12 +89,12 @@ export function Button({
       <TouchableOpacity
         activeOpacity={0.85}
         disabled={isDisabled}
-        className={`rounded-2xl border border-[#8b7cf6]/30 bg-[#8b7cf6]/5 ${s.py} ${s.px} ${isDisabled ? 'opacity-50' : ''} ${className ?? ''}`}
+        className={`rounded-2xl border border-accent-violet/30 bg-accent-violet/5 ${s.py} ${s.px} ${isDisabled ? 'opacity-50' : ''} ${className ?? ''}`}
         {...props}
       >
         <View className="flex-row items-center justify-center">
           {leftIcon && <View className="mr-2.5">{leftIcon}</View>}
-          <Text className={`text-[#c4b5fd] font-light ${s.text} tracking-tight`}>{children}</Text>
+          <Text className={`text-accent-violet font-light ${s.text} tracking-tight`}>{children}</Text>
           {rightIcon && <View className="ml-2.5">{rightIcon}</View>}
         </View>
       </TouchableOpacity>
@@ -111,7 +111,7 @@ export function Button({
       >
         <View className="flex-row items-center justify-center">
           {leftIcon && <View className="mr-2.5">{leftIcon}</View>}
-          <Text className={`text-[#8b8fa3] font-light ${s.text} tracking-tight`}>{children}</Text>
+          <Text className={`text-text-muted-light dark:text-text-muted-dark font-light ${s.text} tracking-tight`}>{children}</Text>
           {rightIcon && <View className="ml-2.5">{rightIcon}</View>}
         </View>
       </TouchableOpacity>
@@ -123,12 +123,12 @@ export function Button({
     <TouchableOpacity
       activeOpacity={0.85}
       disabled={isDisabled}
-      className={`rounded-2xl bg-[#ef4444]/10 border border-[#ef4444]/20 ${s.py} ${s.px} ${isDisabled ? 'opacity-50' : ''} ${className ?? ''}`}
+      className={`rounded-2xl bg-danger/10 border border-danger/20 ${s.py} ${s.px} ${isDisabled ? 'opacity-50' : ''} ${className ?? ''}`}
       {...props}
     >
       <View className="flex-row items-center justify-center">
         {leftIcon && <View className="mr-2.5">{leftIcon}</View>}
-        <Text className={`text-[#ef4444] font-light ${s.text} tracking-tight`}>{children}</Text>
+        <Text className={`text-danger font-light ${s.text} tracking-tight`}>{children}</Text>
         {rightIcon && <View className="ml-2.5">{rightIcon}</View>}
       </View>
     </TouchableOpacity>

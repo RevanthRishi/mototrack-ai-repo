@@ -12,11 +12,11 @@ export default function ForgotPasswordScreen() {
   const [sent, setSent] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#06060f]">
+    <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
       <ScrollView showsVerticalScrollIndicator={false} className="px-7 pt-6 pb-8" contentContainerStyle={{ flexGrow: 1 }}>
-        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7} className="flex-row items-center gap-2 mb-8">
+        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.7} className="flex-row items-center gap-2 mb-8" data-cy="forgot-back">
           <ArrowLeft size={16} color="#8b8fa3" strokeWidth={1.5} />
-          <Text className="text-[#8b8fa3] text-sm font-light">Back to login</Text>
+          <Text className="text-text-muted-dark text-sm font-light">Back to login</Text>
         </TouchableOpacity>
 
         <Animated.View entering={FadeInUp.duration(700)}>
@@ -24,14 +24,14 @@ export default function ForgotPasswordScreen() {
             <KeyRound size={28} color="#fff" strokeWidth={1.5} />
           </LinearGradient>
           <Text className="text-white text-[28px] font-light tracking-tight">Reset Password</Text>
-          <Text className="text-[#6b6b80] text-sm font-light mt-2">Enter your email and we will send a reset link.</Text>
+          <Text className="text-text-secondary-dark text-sm font-light mt-2">Enter your email and we will send a reset link.</Text>
         </Animated.View>
 
         <Animated.View entering={FadeInUp.duration(700).delay(120)} className="mt-10 flex-1">
           {sent ? (
-            <View className="bg-[#10b981]/8 border border-[#10b981]/20 rounded-2xl p-5 mb-6">
-              <Text className="text-[#10b981] text-sm font-medium">Reset link sent.</Text>
-              <Text className="text-[#8b8fa3] text-[12px] font-light mt-1">Check your inbox and follow the link to reset your password.</Text>
+            <View className="bg-accent-emerald/10 border border-accent-emerald/20 rounded-2xl p-5 mb-6">
+              <Text className="text-accent-emerald text-sm font-medium">Reset link sent.</Text>
+              <Text className="text-text-muted-dark text-[12px] font-light mt-1">Check your inbox and follow the link to reset your password.</Text>
             </View>
           ) : (
             <Input
@@ -43,13 +43,13 @@ export default function ForgotPasswordScreen() {
           )}
 
           {!sent && (
-            <Button variant="primary" size="lg" onPress={() => setSent(true)} className="mt-4">
+            <Button variant="primary" size="lg" onPress={() => setSent(true)} className="mt-4" data-cy="forgot-send-link">
               Send Reset Link
             </Button>
           )}
 
           {sent && (
-            <Button variant="secondary" size="lg" onPress={() => router.replace('/(auth)/login')}>
+            <Button variant="secondary" size="lg" onPress={() => router.replace('/(auth)/login')} data-cy="forgot-return-login">
               Return to Login
             </Button>
           )}

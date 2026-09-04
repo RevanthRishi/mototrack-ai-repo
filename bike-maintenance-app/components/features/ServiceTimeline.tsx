@@ -24,7 +24,7 @@ export function ServiceTimeline({ items, onItemPress }: ServiceTimelineProps) {
       {items.map((s) => (
         <View key={s.id} className="relative mb-4">
           <View className="absolute left-[-21px] top-[22px] w-2.5 h-2.5 rounded-full bg-[#8b7cf6] shadow-[0_0_10px_rgba(139,124,246,0.4)] z-10" />
-          <TouchableOpacity activeOpacity={0.85} onPress={() => onItemPress?.(s)} className="bg-[#0d0d18] rounded-[18px] border border-white/[0.06] px-5 py-4 ml-2">
+          <TouchableOpacity activeOpacity={0.85} onPress={() => onItemPress?.(s)} className="bg-[#0d0d18] rounded-[18px] border border-white/[0.06] px-5 py-4 ml-2" data-cy={`service-timeline-item-${s.id}`}>
             <View className="flex-row items-start justify-between mb-2">
               <View>
                 <View className="flex-row items-center gap-2 mb-1">

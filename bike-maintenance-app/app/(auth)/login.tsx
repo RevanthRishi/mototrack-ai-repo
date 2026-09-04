@@ -73,8 +73,8 @@ export default function LoginScreen() {
             >
               <ShieldCheck size={42} color="#fff" strokeWidth={2.2} />
             </LinearGradient>
-            <Text className="text-white text-[2.2rem] font-extrabold tracking-tight leading-tight">MotoTrack AI</Text>
-            <Text className="text-[#9ca3af] text-[15px] mt-2 tracking-wide">Your Smart Bike Companion</Text>
+            <Text className="text-text-primary-dark text-[2.2rem] font-extrabold tracking-tight leading-tight">MotoTrack AI</Text>
+            <Text className="text-text-muted-light dark:text-text-muted-dark text-[15px] mt-2 tracking-wide">Your Smart Bike Companion</Text>
           </Animated.View>
 
           {/* Form */}
@@ -87,13 +87,14 @@ export default function LoginScreen() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
                     placeholder="Email address" placeholderTextColor="#6b6e80"
-                    className="bg-[#161625] rounded-[20px] pl-11 pr-4 py-[14px] text-white text-[15px] border border-[#23233a] focus:border-[#8b7cf6]/50"
+                    className="bg-card-light dark:bg-card-dark rounded-[20px] pl-11 pr-4 py-[14px] text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
                     keyboardType="email-address" autoCapitalize="none"
                     value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
+                    data-cy="login-email-input"
                   />
                 )}
               />
-              {errors.email && <Text className="text-[#f87171] text-xs mt-1.5 ml-1 font-medium">{errors.email.message}</Text>}
+              {errors.email && <Text className="text-danger text-xs mt-1.5 ml-1 font-medium">{errors.email.message}</Text>}
             </View>
 
             {/* Password */}
@@ -104,38 +105,40 @@ export default function LoginScreen() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
                     placeholder="Password" placeholderTextColor="#6b6e80"
-                    className="bg-[#161625] rounded-[20px] pl-11 pr-11 py-[14px] text-white text-[15px] border border-[#23233a] focus:border-[#8b7cf6]/50"
+                    className="bg-card-light dark:bg-card-dark rounded-[20px] pl-11 pr-11 py-[14px] text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
                     secureTextEntry={!showPassword} autoCapitalize="none"
                     value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
+                    data-cy="login-password-input"
                   />
                 )}
               />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-4 top-3.5" disabled={isLoading}>
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-4 top-3.5" disabled={isLoading} data-cy="login-toggle-password">
                 {showPassword ? <EyeOff size={18} color="#8b8fa3" /> : <Eye size={18} color="#8b8fa3" />}
               </TouchableOpacity>
-              {errors.password && <Text className="text-[#f87171] text-xs mt-1.5 ml-1 font-medium">{errors.password.message}</Text>}
+              {errors.password && <Text className="text-danger text-xs mt-1.5 ml-1 font-medium">{errors.password.message}</Text>}
             </View>
 
-            <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')} disabled={isLoading} className="self-end">
-              <Text className="text-[#8b7cf6]/80 text-sm font-semibold">Forgot Password?</Text>
+            <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')} disabled={isLoading} className="self-end" data-cy="login-forgot-password">
+              <Text className="text-accent-violet/80 text-sm font-semibold">Forgot Password?</Text>
             </TouchableOpacity>
 
             {/* Login */}
             <TouchableOpacity
               onPress={handleSubmit(onLoginPress)} disabled={isLoading}
               className="mt-3 active:opacity-90"
+              data-cy="login-submit"
             >
               <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-[20px] py-[14px] shadow-[0_8px_30px_rgba(139,124,246,0.35)]">
-                {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-white text-center text-base font-bold tracking-wide">Log In</Text>}
+                {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-text-primary-dark text-center text-base font-bold tracking-wide">Log In</Text>}
               </LinearGradient>
             </TouchableOpacity>
 
             {/* Biometric */}
             {biometricAvailable && (
-              <TouchableOpacity onPress={handleBiometricLogin} disabled={isLoading} className="mt-2 active:opacity-80">
-                <View className="flex-row items-center justify-center bg-[#161625] rounded-[20px] py-[14px] border border-[#23233a] gap-2.5">
+              <TouchableOpacity onPress={handleBiometricLogin} disabled={isLoading} className="mt-2 active:opacity-80" data-cy="login-biometric">
+                <View className="flex-row items-center justify-center bg-card-light dark:bg-card-dark rounded-[20px] py-[14px] border border-card-elevated gap-2.5">
                   <Fingerprint size={20} color="#8b7cf6" />
-                  <Text className="text-white text-sm font-semibold">Log in with {biometricType}</Text>
+                  <Text className="text-text-primary-dark text-sm font-semibold">Log in with {biometricType}</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -146,16 +149,16 @@ export default function LoginScreen() {
 
           {/* Divider */}
           <View className="flex-row items-center my-6">
-            <View className="flex-1 h-px bg-[#23233a]" />
-            <Text className="text-[#5b5b6e] px-4 text-xs font-bold uppercase tracking-[0.15em]">or</Text>
-            <View className="flex-1 h-px bg-[#23233a]" />
+            <View className="flex-1 h-px bg-card-elevated dark:bg-card-elevated" />
+            <Text className="text-text-secondary-dark px-4 text-xs font-bold uppercase tracking-[0.15em]">or</Text>
+            <View className="flex-1 h-px bg-card-elevated dark:bg-card-elevated" />
           </View>
 
           {/* Sign up */}
           <Animated.View entering={FadeInUp.duration(600).delay(300)} className="items-center">
-            <Text className="text-[#a1a1b0] text-[15px]">New to MotoTrack?</Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/register')} disabled={isLoading} className="mt-1">
-              <Text className="text-[#8b7cf6] text-base font-extrabold">Create an account</Text>
+            <Text className="text-text-muted-light dark:text-text-muted-dark text-[15px]">New to MotoTrack?</Text>
+            <TouchableOpacity onPress={() => router.push('/(auth)/register')} disabled={isLoading} className="mt-1" data-cy="login-create-account">
+              <Text className="text-accent-violet text-base font-extrabold">Create an account</Text>
             </TouchableOpacity>
           </Animated.View>
         </ScrollView>

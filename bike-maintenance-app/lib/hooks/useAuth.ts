@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
 import { upsertUserProfile } from '@/lib/utils/users';
+import { useThemeStore } from '@/lib/stores/themeStore';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -19,7 +20,7 @@ export function useAuth() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -28,23 +29,37 @@ export function useAuth() {
       // whatever metadata the auth provider supplied. OAuth providers
       // (Google, Apple, etc.) deliver name + avatar only at sign-in time,
       // so this is the only safe place to capture them.
-      if (session?.user) {
+      if (session?.user && event === 'SIGNED_IN') {
         upsertUserProfile({
           id: session.user.id,
           email: session.user.email ?? '',
           fullName: session.user.user_metadata?.full_name ?? session.user.user_metadata?.name ?? null,
-          avatarUrl: session.user.user_metadata?.avatar_url ?? null,
-        });
+        }).catch((e) => console.warn('[useAuth] profile upsert threw', e));
+
+        // Read per-user theme preference from DB
+        supabase.from('users').select('theme_dark').eq('id', session.user.id).single()
+          .then(({ data }) => {
+            if (data && typeof data.theme_dark === 'boolean') {
+              useThemeStore.getState().setDark(data.theme_dark);
+            }
+          })
+          .catch((e) => console.warn('[useAuth] theme read failed', e));
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const reset = () => {
+    setUser(null);
+    setSession(null);
+  };
+
   return {
     user,
     session,
     loading,
     isAuthenticated: !!user,
+    reset,
   };
 }

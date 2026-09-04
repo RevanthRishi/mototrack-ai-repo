@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Light mode (default when .dark is absent) */
+:root:not(.dark) {
+  --canvas: #f8f9fc;
+  --card: #ffffff;
+  --elevated: #e8e9f0;
+  --border-color: rgba(15,23,42,0.08);
+  --text-primary: #0f172a;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  color-scheme: light;
+}
+
+/* Dark mode */
+.dark {
+  --canvas: #06060f;
+  --card: #0d0d18;
+  --elevated: #13131f;
+  --border-color: rgba(255,255,255,0.06);
+  --text-primary: #e2e0ed;
+  --text-secondary: #6b6b80;
+  --text-muted: #8b8fa3;
+  color-scheme: dark;
+}
