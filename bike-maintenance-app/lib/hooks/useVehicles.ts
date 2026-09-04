@@ -9,6 +9,7 @@ export function useVehicles() {
     queryKey: ['vehicles', user?.id],
     queryFn: () => (user?.id ? getVehicles(user.id) : Promise.resolve([])),
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000, // 5 min — vehicles don't change often
   });
 
   return {

@@ -3,7 +3,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingSta
 import { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Fuel, TrendingDown, ChevronRight, ArrowDown } from 'lucide-react-native';
+import { Fuel, ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useThemedGradient, THEME_GRADIENTS } from '@/lib/hooks/useThemedGradient';

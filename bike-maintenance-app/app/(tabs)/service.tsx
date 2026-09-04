@@ -3,7 +3,7 @@ import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingSta
 import { useAuth } from '@/lib/hooks/useAuth';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Wrench, Clock, DollarSign, ArrowUpRight } from 'lucide-react-native';
+import { Wrench, Clock, DollarSign } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useThemedGradient, useThemedSheen, THEME_GRADIENTS } from '@/lib/hooks/useThemedGradient';

@@ -17,6 +17,7 @@ export function useFuelLogs() {
       return data ?? [];
     },
     enabled: !!user?.id,
+    staleTime: 3 * 60 * 1000,
   });
   return { logs: data, loading: isLoading, error: error instanceof Error ? error.message : null, refresh: refetch };
 }
