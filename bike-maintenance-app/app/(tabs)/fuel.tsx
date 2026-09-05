@@ -1,4 +1,5 @@
 import { useFuelLogs } from '@/lib/hooks/useFuelLogs';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingState';
 import { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
@@ -15,7 +16,8 @@ function formatDate(iso: string): string {
 }
 
 export default function FuelScreen() {
-  const { logs, loading, error, refresh } = useFuelLogs();
+  const { user } = useAuth();
+  const { logs, loading, error, refresh } = useFuelLogs(user?.id ?? null);
   const heroGradient = useThemedGradient(THEME_GRADIENTS.heroFuel.light, THEME_GRADIENTS.heroFuel.dark);
 
   const stats = useMemo(() => {
@@ -49,7 +51,7 @@ export default function FuelScreen() {
     );
   }
 
-  if (error) {
+  if (error && !loading) {
     return (
       <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
         <View className="px-7 pt-7 pb-8 relative overflow-hidden">

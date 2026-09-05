@@ -38,7 +38,7 @@ export default function ServiceScreen() {
     );
   }
 
-  if (error) {
+  if (error && !loading) {
     return (
       <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
         <View className="px-7 pt-7 pb-8 relative overflow-hidden">

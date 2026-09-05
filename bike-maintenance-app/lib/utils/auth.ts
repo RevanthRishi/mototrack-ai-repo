@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabase } from '@/lib/supabase/client';
 import { AuthError, Session, User } from '@supabase/supabase-js';
 import { upsertUserProfile } from './users';
 
@@ -13,16 +13,8 @@ export interface AuthResponse {
  * Sign in with email and password
  */
 export async function signInWithEmail(email: string, password: string): Promise<AuthResponse> {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  return {
-    user: data.user,
-    session: data.session,
-    error,
-  };
+  const { data, error } = await getSupabase().auth.signInWithPassword({ email, password });
+  return { user: data.user, session: data.session, error };
 }
 
 /**
@@ -33,30 +25,15 @@ export async function signUpWithEmail(
   password: string,
   fullName?: string
 ): Promise<AuthResponse> {
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await getSupabase().auth.signUp({
     email,
     password,
-    options: {
-      data: {
-        full_name: fullName,
-      },
-    },
+    options: { data: { full_name: fullName } },
   });
-
-  // Profile row is best-effort; don't block auth on DB errors.
   if (data.user && !error) {
-    upsertUserProfile({
-      id: data.user.id,
-      email: data.user.email ?? '',
-      fullName: fullName ?? null,
-    });
+    upsertUserProfile({ id: data.user.id, email: data.user.email ?? '', fullName: fullName ?? null });
   }
-
-  return {
-    user: data.user,
-    session: data.session,
-    error,
-  };
+  return { user: data.user, session: data.session, error };
 }
 
 /**
@@ -67,24 +44,14 @@ export async function signUpWithEmail(
  */
 export async function signInWithGoogle(): Promise<AuthResponse> {
   const isWeb = Platform.OS === 'web';
-  // Safe window access — cast to { location?: { origin?: string } } to avoid
-  // TS "window not defined" and "Window missing location" errors in non-dom lib.
   type WindowLike = { location?: { origin?: string } };
-  const origin: string = isWeb
-    ? ((globalThis as unknown as WindowLike).location?.origin ?? '')
-    : '';
-
+  const origin: string = isWeb ? ((globalThis as unknown as WindowLike).location?.origin ?? '') : '';
   const redirectTo = isWeb ? `${origin}/(tabs)` : 'mototrack://(tabs)';
 
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { error } = await getSupabase().auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo,
-      skipBrowserRedirect: !isWeb,
-      queryParams: { prompt: 'select_account' },
-    },
+    options: { redirectTo, skipBrowserRedirect: !isWeb, queryParams: { prompt: 'select_account' } },
   });
-
   return { user: null, session: null, error };
 }
 
@@ -92,7 +59,7 @@ export async function signInWithGoogle(): Promise<AuthResponse> {
  * Sign out current user
  */
 export async function signOut(): Promise<{ error: AuthError | null }> {
-  const { error } = await supabase.auth.signOut();
+  const { error } = await getSupabase().auth.signOut();
   return { error };
 }
 
@@ -100,7 +67,7 @@ export async function signOut(): Promise<{ error: AuthError | null }> {
  * Send password reset email
  */
 export async function resetPassword(email: string): Promise<{ error: AuthError | null }> {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  const { error } = await getSupabase().auth.resetPasswordForEmail(email, {
     redirectTo: 'mototrack://reset-password',
   });
   return { error };
@@ -110,7 +77,7 @@ export async function resetPassword(email: string): Promise<{ error: AuthError |
  * Get current session
  */
 export async function getSession(): Promise<Session | null> {
-  const { data } = await supabase.auth.getSession();
+  const { data } = await getSupabase().auth.getSession();
   return data.session;
 }
 
@@ -118,15 +85,13 @@ export async function getSession(): Promise<Session | null> {
  * Get current user
  */
 export async function getCurrentUser(): Promise<User | null> {
-  const { data } = await supabase.auth.getUser();
+  const { data } = await getSupabase().auth.getUser();
   return data.user;
 }
 
 /**
  * Listen to auth state changes
  */
-export function onAuthStateChange(
-  callback: (event: string, session: Session | null) => void
-) {
-  return supabase.auth.onAuthStateChange(callback);
+export function onAuthStateChange(callback: (event: string, session: Session | null) => void) {
+  return getSupabase().auth.onAuthStateChange(callback);
 }

@@ -1,4 +1,6 @@
+import React from 'react';
 import { useVehicles } from '@/lib/hooks/useVehicles';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingState';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,20 +10,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useThemedGradient, useThemedSheen, useChromeRibbon, THEME_GRADIENTS } from '@/lib/hooks/useThemedGradient';
 
-const STATS = [
-  { label: 'Odometer', value: '28,450', unit: 'km', icon: Gauge, accent: '#f59e0b' },
-  { label: 'Economy', value: '42.3', unit: 'km / l', icon: Fuel, accent: '#10b981' },
-  { label: 'Attention', value: '01', unit: 'overdue', icon: Wrench, accent: '#f97316' },
-];
-
 export default function GarageScreen() {
   const router = useRouter();
-  const { vehicles, loading, error, refresh } = useVehicles();
+  const { user } = useAuth();
+  const { vehicles, loading, error, refresh } = useVehicles(user?.id ?? null);
 
   const heroGradient = useThemedGradient(THEME_GRADIENTS.heroGarage.light, THEME_GRADIENTS.heroGarage.dark);
   const sheen = useThemedSheen('violet');
   const featuredGradient = useThemedGradient(THEME_GRADIENTS.heroFeatured.light, THEME_GRADIENTS.heroFeatured.dark);
   const chrome = useChromeRibbon();
+  const featured = vehicles[0];
+  const rest = vehicles.slice(1);
+  const statsData = featured ? [
+    { label: 'Odometer', value: '—', unit: 'km', icon: Gauge, accent: '#f59e0b' },
+    { label: 'Economy', value: '—', unit: 'km / l', icon: Fuel, accent: '#10b981' },
+    { label: 'Attention', value: '—', unit: 'service due', icon: Wrench, accent: '#f97316' },
+  ] : [
+    { label: 'Odometer', value: '—', unit: 'km', icon: Gauge, accent: '#f59e0b' },
+    { label: 'Economy', value: '—', unit: 'km / l', icon: Fuel, accent: '#10b981' },
+    { label: 'Attention', value: '—', unit: 'service due', icon: Wrench, accent: '#f97316' },
+  ];
 
   if (loading) {
     return (
@@ -43,7 +51,7 @@ export default function GarageScreen() {
     );
   }
 
-  if (error) {
+  if (error && !loading) {
     return (
       <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
         <View className="px-7 pt-7 pb-10 relative overflow-hidden">
@@ -87,9 +95,6 @@ export default function GarageScreen() {
     );
   }
 
-  const featured = vehicles[0];
-  const rest = vehicles.slice(1);
-
   return (
     <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
       {/* Hero — deep editorial gradient with hairline chrome edge */}
@@ -127,12 +132,12 @@ export default function GarageScreen() {
           entering={FadeInDown.duration(600).delay(100)}
           className="bg-card-light dark:bg-card-dark rounded-2xl border border-border-light dark:border-border-dark flex-row overflow-hidden"
         >
-          {STATS.map((s, i) => (
+          {statsData.map((s, i) => (
             <TouchableOpacity
               key={s.label}
               activeOpacity={0.8}
               onPress={() => router.push('/(tabs)/fuel')}
-              className={`flex-1 px-4 py-5 ${i < STATS.length - 1 ? 'border-r border-border-light dark:border-border-dark' : ''}`}
+              className={`flex-1 px-4 py-5 ${i < statsData.length - 1 ? 'border-r border-border-light dark:border-border-dark' : ''}`}
               data-cy={`home-stat-${s.label.toLowerCase()}`}
             >
               <View className="flex-row items-center gap-1.5 mb-3">
@@ -195,7 +200,7 @@ export default function GarageScreen() {
                   <View className="w-px bg-border-light dark:bg-border-dark" />
                   <View className="flex-1">
                     <Text className="text-text-secondary dark:text-text-secondary-dark text-[9px] font-semibold uppercase tracking-[0.25em]">Health</Text>
-                    <Text className="text-accent-emerald text-[22px] font-extralight mt-1 tabular-nums">94<Text className="text-accent-emerald/60 text-sm font-light">%</Text></Text>
+                    <Text className="text-accent-emerald text-[22px] font-extralight mt-1 tabular-nums">{featured ? '92' : '—'}<Text className="text-accent-emerald/60 text-sm font-light">%</Text></Text>
                   </View>
                 </View>
               </LinearGradient>
@@ -234,8 +239,9 @@ export default function GarageScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => router.push('/vehicle/add')}
-              className="flex-1"
+              className="flex-1" style={{ zIndex: 10 }}
               data-cy="home-add-vehicle"
+              hitSlop={12}
             >
               <View className="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-2xl p-5 h-32 justify-between">
                 <View className="flex-row items-center justify-between">

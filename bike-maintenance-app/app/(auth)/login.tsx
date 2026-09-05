@@ -9,7 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Lock, Mail, Eye, EyeOff, Fingerprint, ShieldCheck } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { LoginFormData, loginSchema } from '@/lib/utils/validation';
 
@@ -17,9 +17,14 @@ import { authenticateWithBiometrics, checkBiometricCapabilities, getBiometricTyp
 import { signInWithEmail } from '@/lib/utils/auth';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 import { useGoogleSignIn } from '@/lib/hooks/useGoogleSignIn';
+import { useTheme } from '@/lib/stores/themeStore';
+import { THEME_GRADIENTS, useThemedGradient } from '@/lib/hooks/useThemedGradient';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { isDark } = useTheme();
+  const bgGradient = useThemedGradient(THEME_GRADIENTS.loginBg.light, THEME_GRADIENTS.loginBg.dark);
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -57,15 +62,15 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
-      <StatusBar style="light" />
-      <LinearGradient colors={['#06060f', '#0f0e18', '#140f2d']} className="flex-1">
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <LinearGradient colors={bgGradient} className="flex-1">
         <ScrollView
           contentContainerClassName="flex-grow justify-center px-8 py-14"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           {/* Logo Mark */}
-          <Animated.View entering={FadeInUp.duration(700).springify()} className="items-center mb-10">
+          <Animated.View entering={FadeIn.duration(500)} className="items-center mb-10">
             <LinearGradient
               colors={['#8b7cf6', '#6d5ae6', '#4f3eb3']}
               start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
@@ -73,21 +78,21 @@ export default function LoginScreen() {
             >
               <ShieldCheck size={42} color="#fff" strokeWidth={2.2} />
             </LinearGradient>
-            <Text className="text-text-primary-dark text-[2.2rem] font-extrabold tracking-tight leading-tight">MotoTrack AI</Text>
-            <Text className="text-text-muted-light dark:text-text-muted-dark text-[15px] mt-2 tracking-wide">Your Smart Bike Companion</Text>
+            <Text className="text-text-primary dark:text-text-primary-dark text-[2.2rem] font-extrabold tracking-tight leading-tight">MotoTrack AI</Text>
+            <Text className="text-text-secondary dark:text-text-secondary-dark text-[15px] mt-2 tracking-wide">Your Smart Bike Companion</Text>
           </Animated.View>
 
           {/* Form */}
-          <Animated.View entering={FadeInDown.duration(700).delay(150).springify()} className="space-y-5">
+          <Animated.View entering={FadeIn.duration(500).delay(80)} className="space-y-5">
             {/* Email */}
             <View className="relative">
-              <View className="absolute left-4 top-3.5 z-10"><Mail size={18} color="#8b8fa3" /></View>
+              <View className="absolute left-4 top-3.5 z-10"><Mail size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /></View>
               <Controller
                 control={control} name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    placeholder="Email address" placeholderTextColor="#6b6e80"
-                    className="bg-card-light dark:bg-card-dark rounded-[20px] pl-11 pr-4 py-[14px] text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
+                    placeholder="Email address" placeholderTextColor={isDark ? '#6b6e80' : '#9ca3af'}
+                    className="bg-card-light dark:bg-card-dark rounded-[20px] pl-11 pr-4 py-[14px] text-text-primary dark:text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
                     keyboardType="email-address" autoCapitalize="none"
                     value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
                     data-cy="login-email-input"
@@ -99,13 +104,13 @@ export default function LoginScreen() {
 
             {/* Password */}
             <View className="relative">
-              <View className="absolute left-4 top-3.5 z-10"><Lock size={18} color="#8b8fa3" /></View>
+              <View className="absolute left-4 top-3.5 z-10"><Lock size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /></View>
               <Controller
                 control={control} name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    placeholder="Password" placeholderTextColor="#6b6e80"
-                    className="bg-card-light dark:bg-card-dark rounded-[20px] pl-11 pr-11 py-[14px] text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
+                    placeholder="Password" placeholderTextColor={isDark ? '#6b6e80' : '#9ca3af'}
+                    className="bg-card-light dark:bg-card-dark rounded-[20px] pl-11 pr-11 py-[14px] text-text-primary dark:text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
                     secureTextEntry={!showPassword} autoCapitalize="none"
                     value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
                     data-cy="login-password-input"
@@ -113,7 +118,7 @@ export default function LoginScreen() {
                 )}
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-4 top-3.5" disabled={isLoading} data-cy="login-toggle-password">
-                {showPassword ? <EyeOff size={18} color="#8b8fa3" /> : <Eye size={18} color="#8b8fa3" />}
+                {showPassword ? <EyeOff size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /> : <Eye size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} />}
               </TouchableOpacity>
               {errors.password && <Text className="text-danger text-xs mt-1.5 ml-1 font-medium">{errors.password.message}</Text>}
             </View>
@@ -129,7 +134,7 @@ export default function LoginScreen() {
               data-cy="login-submit"
             >
               <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-[20px] py-[14px] shadow-[0_8px_30px_rgba(139,124,246,0.35)]">
-                {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-text-primary-dark text-center text-base font-bold tracking-wide">Log In</Text>}
+                {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-white text-center text-base font-bold tracking-wide">Log In</Text>}
               </LinearGradient>
             </TouchableOpacity>
 
@@ -138,7 +143,7 @@ export default function LoginScreen() {
               <TouchableOpacity onPress={handleBiometricLogin} disabled={isLoading} className="mt-2 active:opacity-80" data-cy="login-biometric">
                 <View className="flex-row items-center justify-center bg-card-light dark:bg-card-dark rounded-[20px] py-[14px] border border-card-elevated gap-2.5">
                   <Fingerprint size={20} color="#8b7cf6" />
-                  <Text className="text-text-primary-dark text-sm font-semibold">Log in with {biometricType}</Text>
+                  <Text className="text-text-primary dark:text-text-primary-dark text-sm font-semibold">Log in with {biometricType}</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -150,13 +155,13 @@ export default function LoginScreen() {
           {/* Divider */}
           <View className="flex-row items-center my-6">
             <View className="flex-1 h-px bg-card-elevated dark:bg-card-elevated" />
-            <Text className="text-text-secondary-dark px-4 text-xs font-bold uppercase tracking-[0.15em]">or</Text>
+            <Text className="text-text-secondary dark:text-text-secondary-dark px-4 text-xs font-bold uppercase tracking-[0.15em]">or</Text>
             <View className="flex-1 h-px bg-card-elevated dark:bg-card-elevated" />
           </View>
 
           {/* Sign up */}
-          <Animated.View entering={FadeInUp.duration(600).delay(300)} className="items-center">
-            <Text className="text-text-muted-light dark:text-text-muted-dark text-[15px]">New to MotoTrack?</Text>
+          <Animated.View entering={FadeIn.duration(500).delay(200)} className="items-center">
+            <Text className="text-text-secondary dark:text-text-secondary-dark text-[15px]">New to MotoTrack?</Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/register')} disabled={isLoading} className="mt-1" data-cy="login-create-account">
               <Text className="text-accent-violet text-base font-extrabold">Create an account</Text>
             </TouchableOpacity>

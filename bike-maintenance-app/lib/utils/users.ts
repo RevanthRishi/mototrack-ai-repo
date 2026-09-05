@@ -1,7 +1,7 @@
-import { supabase } from '@/lib/supabase/client';
-import type { Database, TablesInsert } from '@/lib/supabase/database.types';
+import { getSupabase } from '@/lib/supabase/client';
+import type { Database } from '@/lib/supabase/database.types';
 
-type UserInsert = TablesInsert<'users'>;
+type UserInsert = Database['public']['Tables']['users']['Insert'];
 
 export interface CreateUserProfileInput {
   id: string;
@@ -37,7 +37,7 @@ export function buildUserProfileInsert(input: CreateUserProfileInput): UserInser
  * the auth flow must not be blocked by a profile write.
  */
 export async function upsertUserProfile(input: CreateUserProfileInput): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from('users')
     .upsert(buildUserProfileInsert(input), { onConflict: 'id' });
   if (error) {

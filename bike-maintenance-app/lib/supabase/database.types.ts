@@ -5,6 +5,10 @@ export type Json = string | number | boolean | Json[] | { [key: string]: Json };
 
 export interface Database {
   public: {
+    Views: Record<never, never>;
+    Functions: Record<never, never>;
+    Enums: Record<never, never>;
+    CompositeTypes: Record<never, never>;
     Tables: {
       users: {
         Row: {
@@ -62,6 +66,7 @@ export interface Database {
           make: string;
           model: string;
           year: number | null;
+          odometer: number | null;
           variant: string | null;
           vehicle_type: string | null;
           photo_url: string | null;
@@ -75,6 +80,7 @@ export interface Database {
           make: string;
           model: string;
           year?: number | null;
+          odometer?: number | null;
           variant?: string | null;
           vehicle_type?: string | null;
           photo_url?: string | null;
@@ -86,6 +92,7 @@ export interface Database {
           make: string;
           model: string;
           year: number | null;
+          odometer: number | null;
           variant: string | null;
           vehicle_type: string | null;
           photo_url: string | null;

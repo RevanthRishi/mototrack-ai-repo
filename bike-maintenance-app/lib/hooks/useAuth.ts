@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/client';
+import { getSupabase } from '@/lib/supabase/client';
 import { upsertUserProfile } from '@/lib/utils/users';
+import { getProfile } from '@/lib/supabase/queries';
 import { useThemeStore } from '@/lib/stores/themeStore';
 
 export function useAuth() {
@@ -11,7 +12,7 @@ export function useAuth() {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    getSupabase().auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -20,7 +21,7 @@ export function useAuth() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = getSupabase().auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -36,24 +37,29 @@ export function useAuth() {
           fullName: session.user.user_metadata?.full_name ?? session.user.user_metadata?.name ?? null,
         }).catch((e) => console.warn('[useAuth] profile upsert threw', e));
 
-        // Read per-user theme preference from DB
-        supabase.from('users').select('theme_dark').eq('id', session.user.id).single()
-          .then(({ data }) => {
+        // Read profile + theme in one query
+        getProfile(session.user.id)
+          .then((data) => {
             if (data && typeof data.theme_dark === 'boolean') {
               useThemeStore.getState().setDark(data.theme_dark);
             }
           })
-          .catch((e) => console.warn('[useAuth] theme read failed', e));
+          .catch((e) => console.warn('[useAuth] profile read failed', e));
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   const reset = () => {
-    setUser(null);
-    setSession(null);
+    // Don't null user here — let auth state change drive it naturally.
+    // Manual reset causes a brief loading=true/user=null gap that flashes
+    // the AuthLayout spinner on logout.
   };
+
+  const setLoggingOut = (val: boolean) => setIsLoggingOut(val);
 
   return {
     user,
@@ -61,5 +67,7 @@ export function useAuth() {
     loading,
     isAuthenticated: !!user,
     reset,
+    isLoggingOut,
+    setLoggingOut,
   };
 }

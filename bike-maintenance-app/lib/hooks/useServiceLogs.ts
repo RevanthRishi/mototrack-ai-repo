@@ -1,21 +1,25 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase/client';
+import { getServiceLogs, ServiceLogRow } from '@/lib/supabase/queries';
+import { useUserDataStore } from '@/lib/stores/userDataStore';
 
-export function useServiceLogs(userId: string | null) {
-  const { data = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['service_logs', userId],
-    queryFn: async () => {
-      if (!userId) return [];
-      const { data, error } = await supabase
-        .from('service_logs')
-        .select('*')
-        .eq('user_id', userId)
-        .order('date', { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
+export function useServiceLogs(userId?: string | null) {
+  const query = useQuery<ServiceLogRow[]>({
+    queryKey: ['serviceLogs', userId],
+    queryFn: () => getServiceLogs(userId!),
     enabled: !!userId,
-    staleTime: 3 * 60 * 1000,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
-  return { logs: data, loading: isLoading, error: error instanceof Error ? error.message : null, refresh: refetch };
+
+  useEffect(() => {
+    if (query.data) useUserDataStore.getState().setServiceLogs(query.data);
+  }, [query.data]);
+
+  return {
+    logs: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error ? (query.error as Error).message : null,
+    refresh: () => query.refetch(),
+  };
 }

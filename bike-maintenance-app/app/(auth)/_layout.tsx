@@ -3,7 +3,13 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import { ActivityIndicator, View } from 'react-native';
 
 export default function AuthLayout() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
+
+  if (loading && user === null) {
+    // user is already null — don't show spinner, go straight to login form.
+    // loading=true here is just a brief Supabase confirmation pulse after sign-out.
+    return null;
+  }
 
   if (loading) {
     return (
@@ -21,7 +27,7 @@ export default function AuthLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: 'slide_from_right',
+        animation: 'fade',
         contentStyle: { backgroundColor: undefined },
       }}
     >

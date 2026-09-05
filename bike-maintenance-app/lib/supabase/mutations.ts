@@ -1,0 +1,1 @@
+export { insertVehicle } from './queries';

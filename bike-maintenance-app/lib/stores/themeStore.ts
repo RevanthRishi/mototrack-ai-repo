@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface ThemeState {
   isDark: boolean;
@@ -17,14 +17,18 @@ export const useThemeStore = create<ThemeState>()(
     }),
     {
       name: 'mototrack-theme',
-      storage: {
-        getItem: async (name) => {
+      storage: createJSONStorage(() => ({
+        getItem: async (name: string) => {
           const raw = await AsyncStorage.getItem(name);
-          return raw ? JSON.parse(raw) : null;
+          return raw ?? null;
         },
-        setItem: async (name, value) => await AsyncStorage.setItem(name, JSON.stringify(value)),
-        removeItem: async (name) => await AsyncStorage.removeItem(name),
-      },
+        setItem: async (name: string, value: string) => {
+          await AsyncStorage.setItem(name, value);
+        },
+        removeItem: async (name: string) => {
+          await AsyncStorage.removeItem(name);
+        },
+      })),
     }
   )
 );

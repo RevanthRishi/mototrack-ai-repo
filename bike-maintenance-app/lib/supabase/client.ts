@@ -8,7 +8,6 @@ import { Database } from './database.types';
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://localhost:54321';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-// Lazy initialization to avoid SSR issues
 let supabaseInstance: SupabaseClient<Database> | null = null;
 
 const getSecureStorageAdapter = () => ({
@@ -46,6 +45,12 @@ const getSecureStorageAdapter = () => ({
   },
 });
 
+/**
+ * Lazy singleton Supabase client.
+ * Use this for ALL database queries and mutations to preserve typed return values.
+ * For auth (signInWithPassword, signOut, onAuthStateChange, etc.) use the
+ * convenience wrapper in lib/utils/auth.ts which calls getSupabase().auth.
+ */
 export const getSupabase = (): SupabaseClient<Database> => {
   if (!supabaseInstance) {
     supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey, {
@@ -58,24 +63,4 @@ export const getSupabase = (): SupabaseClient<Database> => {
     });
   }
   return supabaseInstance;
-};
-
-// For backwards compatibility - returns the lazy singleton
-export const supabase = {
-  get auth() {
-    return getSupabase().auth;
-  },
-
-  get realtime() {
-    return getSupabase().realtime;
-  },
-  get storage() {
-    return getSupabase().storage;
-  },
-  get from() {
-    return getSupabase().from.bind(getSupabase());
-  },
-  get rpc() {
-    return getSupabase().rpc.bind(getSupabase());
-  },
 };

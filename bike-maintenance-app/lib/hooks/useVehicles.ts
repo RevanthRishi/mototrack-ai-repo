@@ -1,21 +1,25 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getVehicles } from '@/lib/supabase/queries';
-import { useAuth } from './useAuth';
+import { getVehicles, VehicleRow } from '@/lib/supabase/queries';
+import { useUserDataStore } from '@/lib/stores/userDataStore';
 
-export function useVehicles() {
-  const { user } = useAuth();
-
-  const { data: vehicles = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['vehicles', user?.id],
-    queryFn: () => (user?.id ? getVehicles(user.id) : Promise.resolve([])),
-    enabled: !!user?.id,
-    staleTime: 5 * 60 * 1000, // 5 min — vehicles don't change often
+export function useVehicles(userId?: string | null) {
+  const query = useQuery<VehicleRow[]>({
+    queryKey: ['vehicles', userId],
+    queryFn: () => getVehicles(userId!),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
+  useEffect(() => {
+    if (query.data) useUserDataStore.getState().setVehicles(query.data);
+  }, [query.data]);
+
   return {
-    vehicles,
-    loading: isLoading,
-    error: error instanceof Error ? error.message : null,
-    refresh: refetch,
+    vehicles: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error ? (query.error as Error).message : null,
+    refresh: () => query.refetch(),
   };
 }
