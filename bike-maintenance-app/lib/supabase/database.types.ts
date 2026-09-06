@@ -66,7 +66,7 @@ export interface Database {
           make: string;
           model: string;
           year: number | null;
-          odometer: number | null;
+          current_odometer: number | null;
           variant: string | null;
           vehicle_type: string | null;
           photo_url: string | null;
@@ -80,7 +80,7 @@ export interface Database {
           make: string;
           model: string;
           year?: number | null;
-          odometer?: number | null;
+          current_odometer?: number | null;
           variant?: string | null;
           vehicle_type?: string | null;
           photo_url?: string | null;
@@ -92,7 +92,7 @@ export interface Database {
           make: string;
           model: string;
           year: number | null;
-          odometer: number | null;
+          current_odometer: number | null;
           variant: string | null;
           vehicle_type: string | null;
           photo_url: string | null;

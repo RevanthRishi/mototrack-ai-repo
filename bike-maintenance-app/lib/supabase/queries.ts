@@ -20,7 +20,7 @@ export async function getVehicle(vehicleId: string): Promise<VehicleRow | null> 
 
 export async function updateVehicle(
   vehicleId: string,
-  updates: Partial<Pick<VehicleRow, 'name' | 'make' | 'model' | 'year' | 'variant' | 'vehicle_type' | 'odometer'>>
+  updates: Partial<Pick<VehicleRow, 'name' | 'make' | 'model' | 'year' | 'variant' | 'vehicle_type' | 'current_odometer'>>
 ): Promise<VehicleRow> {
   const { data, error } = await getSupabase()
     .from('vehicles')
@@ -60,7 +60,7 @@ export async function insertVehicle(data: {
 }): Promise<VehicleRow> {
   const { data: result, error } = await getSupabase()
     .from('vehicles')
-    .insert(data)
+    .insert({ ...data, current_odometer: data.odometer })
     .select()
     .single();
   if (error) throw error;

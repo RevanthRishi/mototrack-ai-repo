@@ -47,7 +47,7 @@ export default function EditVehicleScreen() {
         model,
         year: yearVal,
         variant: variant || undefined,
-        odometer: odometerVal,
+        current_odometer: odometerVal,
       },
       {
         onSuccess: () => {
@@ -112,7 +112,7 @@ export default function EditVehicleScreen() {
           <View className="bg-card-light dark:bg-card-dark rounded-[22px] border border-border-light dark:border-border-dark p-5 mb-6">
             <Text className="text-text-secondary-light dark:text-text-secondary-dark text-[10px] font-semibold uppercase tracking-[0.25em] mb-3">Current Vehicle</Text>
             <Text className="text-text-primary dark:text-text-primary-dark text-lg font-light">{vehicle.name || `${vehicle.make} ${vehicle.model}`}</Text>
-            <Text className="text-text-secondary-light dark:text-text-secondary-dark text-sm font-light mt-0.5">{vehicle.year} · {vehicle.odometer ? `${vehicle.odometer.toLocaleString()} km` : '—'}</Text>
+            <Text className="text-text-secondary-light dark:text-text-secondary-dark text-sm font-light mt-0.5">{vehicle.year} · {vehicle.current_odometer ? `${vehicle.current_odometer.toLocaleString()} km` : (vehicle.odometer ? `${vehicle.odometer.toLocaleString()} km` : '—')}</Text>
           </View>
         ) : (
           <View className="bg-card-light dark:bg-card-dark rounded-[22px] border border-border-light dark:border-border-dark p-5 mb-6">
