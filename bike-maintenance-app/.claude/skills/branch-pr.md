@@ -22,7 +22,7 @@ git checkout -b feat/<name>
 
 ### 2. Work on branch
 - Edit files, commit as needed (`git commit -m "..."`)
-- Each commit should have a clear message (see `code-quality.md`)
+- Each commit must follow `commit-message.md` (type, scope, body with what/why, skills, tests, breaking)
 
 ### 3. Before pushing
 - Confirm `main` branch is not edited (check `git branch --show-current`)
