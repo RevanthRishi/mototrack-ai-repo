@@ -2,13 +2,12 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { useTheme } from '@/lib/stores/themeStore';
 import { COLORS, getColors } from '@/lib/theme/theme';
-import { Home, Fuel, Wrench, Bot, User, MapPin } from 'lucide-react-native';
+import { Home, Fuel, Wrench, Bot, User } from 'lucide-react-native';
 
 const TABS = [
   { name: 'index', title: 'Garage', Icon: Home },
   { name: 'fuel', title: 'Fuel', Icon: Fuel },
   { name: 'service', title: 'Service', Icon: Wrench },
-  { name: 'maps', title: 'Maps', Icon: MapPin },
   { name: 'ai-mechanic', title: 'AI', Icon: Bot },
   { name: 'profile', title: 'Profile', Icon: User },
 ];

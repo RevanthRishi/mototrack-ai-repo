@@ -73,7 +73,8 @@ interface OverpassElement {
 export async function fetchNearbyStations(
   coords: GpsCoords,
   radiusKm = 5,
-  limit = 20
+  limit = 20,
+  retries = 2
 ): Promise<FuelStation[]> {
   const overpassUrl = 'https://overpass-api.de/api/interpreter';
   const radiusM = Math.round(radiusKm * 1000);
@@ -86,19 +87,22 @@ export async function fetchNearbyStations(
   `.trim();
 
   let response: Response;
-  try {
-    response = await fetch(overpassUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `data=${encodeURIComponent(query)}`,
-    });
-  } catch {
-    throw new Error('Network error — check your connection.');
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      response = await fetch(overpassUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `data=${encodeURIComponent(query)}`,
+      });
+      if (response.ok) break;
+      if (attempt === retries) throw new Error(`Overpass API error ${response.status}`);
+      await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+    } catch {
+      if (attempt === retries) throw new Error('Network error — check your connection.');
+      await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+    }
   }
-
-  if (!response.ok) {
-    throw new Error(`Overpass API error ${response.status}`);
-  }
+  if (!response || !response.ok) throw new Error('Overpass unreachable after retries.');
 
   const json = await response.json() as { elements: OverpassElement[] };
   const result: FuelStation[] = [];

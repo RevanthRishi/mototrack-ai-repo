@@ -30,10 +30,12 @@ export default function GarageScreen() {
     { label: 'Odometer', value: '—', unit: 'km', icon: Gauge, accent: '#f59e0b' },
     { label: 'Economy', value: '—', unit: 'km / l', icon: Fuel, accent: '#10b981' },
     { label: 'Attention', value: '—', unit: 'service due', icon: Wrench, accent: '#f97316' },
+    { label: 'Ride', value: '0.0', unit: 'km', icon: Activity, accent: '#8b7cf6' },
   ] : [
     { label: 'Odometer', value: '—', unit: 'km', icon: Gauge, accent: '#f59e0b' },
     { label: 'Economy', value: '—', unit: 'km / l', icon: Fuel, accent: '#10b981' },
     { label: 'Attention', value: '—', unit: 'service due', icon: Wrench, accent: '#f97316' },
+    { label: 'Ride', value: '0.0', unit: 'km', icon: Activity, accent: '#8b7cf6' },
   ];
 
   if (loading) {
@@ -141,7 +143,7 @@ export default function GarageScreen() {
             <TouchableOpacity
               key={s.label}
               activeOpacity={0.8}
-              onPress={() => router.push('/(tabs)/fuel')}
+              onPress={() => s.label === 'Ride' && featured ? router.push(`/vehicle/${featured.id}/tracker`) : null}
               className={`flex-1 px-4 py-5 ${i < statsData.length - 1 ? 'border-r border-border-light dark:border-border-dark' : ''}`}
               data-cy={`home-stat-${s.label.toLowerCase()}`}
             >
