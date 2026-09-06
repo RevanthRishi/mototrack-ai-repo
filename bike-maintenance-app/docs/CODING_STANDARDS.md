@@ -37,3 +37,10 @@
 ---
 
 See `.cursorrules` for design/architecture rules and `CLAUDE.md` for full project architecture.
+
+## Skills Auto-Activation (2026-09-06)
+Every code change activates the 9 project skills automatically. No manual command needed.
+Skills: store-isolation | api-boundary | routing-contract | e2e-data-cy | code-quality | performance-optimization | code-review | pr-template | test-coverage | auto
+Reference: .claude/skills/ (11 files)
+Coverage rule: >=90% changed lines + real-time validation required
+

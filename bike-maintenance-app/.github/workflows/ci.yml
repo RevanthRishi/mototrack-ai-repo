@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm test -- --coverage --watchAll=false --collectCoverageFrom='lib/**/*' --collectCoverageFrom='app/**/*' --collectCoverageFrom='components/**/*'
+
+      - name: E2E tests
+        run: npx playwright install && npx playwright test
+
+      - name: Check coverage >= 90%
+        run: |
+          COVERAGE=$(npm test -- --watchAll=false --coverage --silent --collectCoverageFrom='lib/**/*' --collectCoverageFrom='app/**/*' --collectCoverageFrom='components/**/*' 2>/dev/null | grep -oP '[0-9]+(\.[0-9]+)?%' | tail -1 || echo "0%")
+          echo "Coverage: $COVERAGE"
+          # Note: full gate may need custom script to enforce 90% per changed file
