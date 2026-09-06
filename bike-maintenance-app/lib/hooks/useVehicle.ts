@@ -19,7 +19,7 @@ export function useUpdateVehicle(vehicleId: string) {
   return useMutation({
     mutationFn: async (data: {
       name?: string; make?: string; model?: string; year?: number;
-      variant?: string; vehicle_type?: string; odometer?: number;
+      variant?: string; vehicle_type?: string; current_odometer?: number;
     }) => updateVehicle(vehicleId, data),
     onSuccess: (updated) => {
       store.upsertVehicle(updated);
