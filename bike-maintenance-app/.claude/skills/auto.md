@@ -13,6 +13,7 @@ These skills run automatically — no command needed. The AI activates them by d
 | Reviewing code or opening PR | `code-review`, `pr-template`, `test-coverage` | Review process is mandatory before merge |
 | Writing/committing tests | `test-coverage` | Coverage check runs with PR |
 | Starting any new task or `git commit` | `branch-pr` | Every change must flow through a feature branch + PR |
+| Any file edit involving auth, env, secrets, storage, or edge functions | `security` | Security rules enforced on every relevant change |
 
 ## Enforced Rules (no override)
 
