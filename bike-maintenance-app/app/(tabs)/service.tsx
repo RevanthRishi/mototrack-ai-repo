@@ -108,7 +108,7 @@ export default function ServiceScreen() {
             { icon: Wrench, value: String(logs.length).padStart(2, '0'), label: 'Records', color: '#8b7cf6', sub: 'Maintenance entries' },
             { icon: Clock, value: String(daysSince), label: 'Days', color: '#10b981', sub: 'Since last service' },
           ].map((s) => (
-            <View key={s.label} className="flex-1 bg-card-light dark:bg-card-dark rounded-2xl border border-border-light dark:border-border-dark px-4 py-5 shadow-[0_4px_16px_rgba(15,23,42,0.05)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.35)]" data-cy={`service-stat-${s.label.toLowerCase()}`}>
+            <View key={s.label} className="flex-1 bg-card-light dark:bg-card-dark rounded-2xl border border-border-light dark:border-border-dark px-4 py-5 " data-cy={`service-stat-${s.label.toLowerCase()}`}>
               <View className="w-8 h-8 rounded-full bg-elevated-light dark:bg-elevated-dark border border-border-light dark:border-border-dark items-center justify-center mb-3">
                 <s.icon size={14} color={s.color} strokeWidth={1.8} />
               </View>
@@ -131,9 +131,9 @@ export default function ServiceScreen() {
               className="relative mb-4"
             >
               {/* timeline node */}
-              <View className="absolute left-[-21px] top-[22px] w-2.5 h-2.5 rounded-full bg-accent-violet shadow-[0_0_10px_rgba(139,124,246,0.4)] z-10" />
+              <View className="absolute left-[-21px] top-[22px] w-2.5 h-2.5 rounded-full bg-accent-violet z-10" />
 
-              <TouchableOpacity activeOpacity={0.85} className="bg-card-light dark:bg-card-dark rounded-[18px] border border-border-light dark:border-border-dark px-5 py-4 ml-2 shadow-[0_4px_16px_rgba(15,23,42,0.05)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.35)]" data-cy={`service-item-${s.id}`}>
+              <TouchableOpacity activeOpacity={0.85} className="bg-card-light dark:bg-card-dark rounded-[18px] border border-border-light dark:border-border-dark px-5 py-4 ml-2 " data-cy={`service-item-${s.id}`}>
                 <View className="flex-row items-start justify-between mb-2">
                   <View>
                     <View className="flex-row items-center gap-2 mb-1">

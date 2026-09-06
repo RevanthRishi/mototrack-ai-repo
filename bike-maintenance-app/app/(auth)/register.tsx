@@ -76,7 +76,7 @@ export default function RegisterScreen() {
         >
           {/* Logo */}
           <Animated.View entering={FadeInUp.duration(600)} className="items-center mb-8">
-            <View className="w-20 h-20 rounded-3xl items-center justify-center mb-5 shadow-[0_12px_40px_rgba(139,124,246,0.45)] bg-gradient-to-br from-[#8b7cf6] to-[#4f3eb3]">
+            <View className="w-20 h-20 rounded-3xl items-center justify-center mb-5 bg-gradient-to-br from-[#8b7cf6] to-[#4f3eb3]">
               <Sparkles size={36} color="#fff" strokeWidth={2.2} />
             </View>
             <Text className="text-text-primary dark:text-white text-[2rem] font-extrabold tracking-tight leading-tight">Create Account</Text>
@@ -169,7 +169,7 @@ export default function RegisterScreen() {
               </Text>
 
               <TouchableOpacity onPress={handleSubmit(onRegisterPress)} disabled={isLoading} className="mt-1" data-cy="register-submit">
-                <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-2xl py-3.5 shadow-[0_8px_30px_rgba(139,124,246,0.45)]">
+                <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-2xl py-3.5">
                   {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-white text-center text-base font-bold tracking-wide">Create Account</Text>}
                 </LinearGradient>
               </TouchableOpacity>

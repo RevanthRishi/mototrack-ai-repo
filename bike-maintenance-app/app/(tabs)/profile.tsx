@@ -82,12 +82,12 @@ export default function ProfileScreen() {
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-7 -mt-5">
         {/* User card — elevated with chrome edge */}
         <Animated.View entering={FadeInDown.duration(600).delay(100)}>
-          <View className="rounded-[28px] overflow-hidden border border-border-light dark:border-border-dark mb-8 shadow-[0_8px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.45)]">
+          <View className="rounded-[28px] overflow-hidden border border-border-light dark:border-border-dark mb-8 ">
             <LinearGradient colors={profileGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="absolute inset-0" />
             <LinearGradient colors={chrome} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} className="absolute top-0 left-0 right-0 h-px" />
             <View className="relative z-10 p-7">
               <View className="flex-row items-center gap-5">
-                <View className="w-[72px] h-[72px] rounded-full bg-accent-violet/10 border border-accent-violet/15 items-center justify-center shadow-[0_0_20px_rgba(139,124,246,0.15)]">
+                <View className="w-[72px] h-[72px] rounded-full bg-accent-violet/10 border border-accent-violet/15 items-center justify-center">
                   <Text className="text-text-primary dark:text-text-primary-dark text-3xl font-extralight tracking-tight">{avatarInitial}</Text>
                 </View>
                 <View className="flex-1">
@@ -107,7 +107,7 @@ export default function ProfileScreen() {
                 {/* Upgrade — right end of user row */}
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-full bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark shadow-[0_2px_8px_rgba(245,158,11,0.15)] dark:shadow-[0_2px_8px_rgba(245,158,11,0.25)]"
+                  className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-full bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark "
                   data-cy="profile-upgrade-premium"
                 >
                   <Crown size={11} color="#f59e0b" strokeWidth={1.8} />
@@ -134,7 +134,7 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <Text className="text-text-secondary-light dark:text-text-secondary-dark text-[10px] font-semibold uppercase tracking-[0.3em] mb-3">Preferences</Text>
-        <View className="bg-card-light dark:bg-card-dark rounded-[20px] border border-border-light dark:border-border-dark overflow-hidden mb-4 shadow-[0_4px_16px_rgba(15,23,42,0.05)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.35)]">
+        <View className="bg-card-light dark:bg-card-dark rounded-[20px] border border-border-light dark:border-border-dark overflow-hidden mb-4 ">
           {SETTINGS.map((s, i) => (
             <TouchableOpacity key={s.label} className={`flex-row items-center p-4 ${i < SETTINGS.length - 1 ? 'border-b border-border-light dark:border-border-dark' : ''} active:opacity-70`} data-cy={`profile-setting-${s.label.toLowerCase()}`}>
               <View className="w-9 h-9 rounded-xl items-center justify-center" style={{ backgroundColor: `${s.color}12` }}>

@@ -25,7 +25,7 @@ export default function ForgotPasswordScreen() {
         </TouchableOpacity>
 
         <Animated.View entering={FadeInUp.duration(700)}>
-          <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0.7 }} className="w-16 h-16 rounded-[20px] items-center justify-center shadow-[0_0_24px_rgba(139,124,246,0.3)] mb-6">
+          <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0.7 }} className="w-16 h-16 rounded-[20px] items-center justify-center mb-6">
             <KeyRound size={28} color="#fff" strokeWidth={1.5} />
           </LinearGradient>
           <Text className="text-text-primary dark:text-text-primary-dark text-[28px] font-light tracking-tight">Reset Password</Text>

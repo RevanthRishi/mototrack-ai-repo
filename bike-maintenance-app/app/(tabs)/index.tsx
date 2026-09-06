@@ -165,7 +165,7 @@ export default function GarageScreen() {
         {/* Featured — magazine spread with chrome ribbon */}
         <Animated.View entering={FadeInDown.duration(700).delay(250)}>
           <TouchableOpacity activeOpacity={0.9} onPress={() => router.push(`/vehicle/${featured.id}`)} data-cy="home-featured-vehicle">
-            <View className="rounded-[28px] overflow-hidden relative border border-border-light dark:border-border-dark shadow-[0_8px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.45)]">
+            <View className="rounded-[28px] overflow-hidden relative border border-border-light dark:border-border-dark ">
               <LinearGradient colors={featuredGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="p-7">
                 {/* chrome ribbon */}
                 <LinearGradient
