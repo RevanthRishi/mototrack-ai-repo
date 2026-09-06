@@ -19,7 +19,9 @@
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to scan receipts and take vehicle photos.",
         "NSPhotoLibraryUsageDescription": "We need photo library access to upload vehicle images.",
-        "NSFaceIDUsageDescription": "We use Face ID to securely authenticate you."
+        "NSFaceIDUsageDescription": "We use Face ID to securely authenticate you.",
+        "NSLocationWhenInUseUsageDescription": "MotoTrack needs your location to show nearby fuel stations and pre-fill your odometer reading.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "MotoTrack uses your location in the background to notify you when you're near a fuel station."
       }
     },
     "android": {
@@ -33,7 +35,10 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.USE_BIOMETRIC",
-        "android.permission.USE_FINGERPRINT"
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION"
       ]
     },
     "web": {
@@ -45,6 +50,7 @@
       "expo-router",
       "expo-secure-store",
       "expo-local-authentication",
+      "expo-location",
       [
         "expo-image-picker",
         {

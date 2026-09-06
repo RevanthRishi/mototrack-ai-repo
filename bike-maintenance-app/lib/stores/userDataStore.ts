@@ -94,3 +94,24 @@ export const useFuelLogs = () => useUserDataStore((s) => s.fuelLogs);
 export const useServiceLogs = () => useUserDataStore((s) => s.serviceLogs);
 export const useUserLoading = () => useUserDataStore((s) => s.loading);
 export const useUserErrors = () => useUserDataStore((s) => s.errors);
+
+/** Returns the most recent odometer reading across all vehicles, fuel logs, and service logs.
+ *  Priority: last fuel log odometer → last service log odometer → vehicle current_odometer.
+ */
+export const useLatestOdometer = (): number | null => {
+  return useUserDataStore((s) => {
+    if (s.fuelLogs.length > 0) {
+      return Math.max(...s.fuelLogs.map((l) => l.odometer));
+    }
+    if (s.serviceLogs.length > 0) {
+      return Math.max(...s.serviceLogs.map((l) => l.odometer));
+    }
+    if (s.vehicles.length > 0) {
+      const vals = s.vehicles
+        .map((v) => v.current_odometer ?? 0)
+        .filter((n) => n > 0);
+      if (vals.length > 0) return Math.max(...vals);
+    }
+    return null;
+  });
+};
