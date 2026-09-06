@@ -20,6 +20,7 @@ interface GoogleSignInButtonProps {
   loading?: boolean;
   disabled?: boolean;
   onPress?: () => void;
+  iconOnly?: boolean;
 }
 
 export function GoogleSignInButton({
@@ -27,7 +28,28 @@ export function GoogleSignInButton({
   loading = false,
   disabled = false,
   onPress,
+  iconOnly = false,
 }: GoogleSignInButtonProps) {
+  if (iconOnly) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={loading || disabled}
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        data-cy="login-google"
+        className="w-11 h-11 items-center justify-center rounded-full border"
+        style={{
+          backgroundColor: '#ffffff',
+          borderColor: 'rgba(15,23,42,0.08)',
+        }}
+      >
+        {loading ? <ActivityIndicator color="#5f6368" size="small" /> : <GoogleIcon size={20} />}
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       onPress={onPress}

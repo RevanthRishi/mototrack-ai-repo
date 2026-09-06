@@ -8,7 +8,8 @@ export const loginSchema = z.object({
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
-    .max(100, 'Password is too long'),
+    .max(100, 'Password is too long')
+    .regex(/^[^\s]+$/, 'Password must not contain spaces'),
 });
 
 export const registerSchema = z.object({

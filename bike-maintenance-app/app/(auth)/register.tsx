@@ -1,28 +1,39 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert,
+  KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Lock, Mail, Eye, EyeOff, User, Sparkles } from 'lucide-react-native';
+import { Lock, Mail, Eye, EyeOff, User, Sparkles, Check } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 import { RegisterFormData, registerSchema } from '@/lib/utils/validation';
 import { signUpWithEmail } from '@/lib/utils/auth';
+import { useNotification } from '@/lib/notifications/NotificationContext';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 import { useGoogleSignIn } from '@/lib/hooks/useGoogleSignIn';
 import { useTheme } from '@/lib/stores/themeStore';
-import { THEME_GRADIENTS, useThemedGradient } from '@/lib/hooks/useThemedGradient';
+import { AuthShell } from '@/components/auth/AuthShell';
 
+function PasswordRule({ met, label }: { met: boolean; label: string }) {
+  return (
+    <View className="flex-row items-center gap-2 mb-0.5">
+      <View className={`w-4 h-4 rounded-full items-center justify-center ${met ? 'bg-emerald-500/20' : 'bg-white/10'}`}>
+        {met && <Check size={10} color="#10b981" />}
+      </View>
+      <Text className={`text-xs ${met ? 'text-emerald-400' : 'text-white/40'}`}>{label}</Text>
+    </View>
+  );
+}
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
-  const bgGradient = useThemedGradient(THEME_GRADIENTS.loginBg.light, THEME_GRADIENTS.loginBg.dark);
+  const { notify } = useNotification();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,151 +44,151 @@ export default function RegisterScreen() {
     defaultValues: { email: '', password: '', confirmPassword: '', fullName: '' },
   });
 
+  const watchedPassword = useWatch({ control, name: 'password' });
+
+  const rules = [
+    { met: (watchedPassword?.length ?? 0) >= 8, label: 'At least 8 characters' },
+    { met: /[A-Z]/.test(watchedPassword ?? ''), label: 'One uppercase letter' },
+    { met: /[a-z]/.test(watchedPassword ?? ''), label: 'One lowercase letter' },
+    { met: /\d/.test(watchedPassword ?? ''), label: 'One number' },
+  ];
+
   const onRegisterPress = async (data: RegisterFormData) => {
     setIsLoading(true);
-    const { error } = await signUpWithEmail(data.email, data.password, data.fullName);
+    const res = await signUpWithEmail(data.email, data.password, data.fullName);
     setIsLoading(false);
-    if (error) {
-      Alert.alert('Sign up failed', error.message);
+    if (!res.success) {
+      notify(res.error ?? 'Something went wrong', 'error');
       return;
     }
-    Alert.alert('Success!', 'Account created.', [{ text: 'OK', onPress: () => router.replace('/(tabs)') }]);
+    notify('Account created!', 'success');
+    router.replace('/(tabs)');
   };
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
       <StatusBar style={isDark ? 'light' : 'dark'} />
-      <LinearGradient colors={bgGradient} className="flex-1">
+      <AuthShell isDark={isDark}>
         <ScrollView
-          contentContainerClassName="flex-grow justify-center px-8 py-14"
+          contentContainerClassName="flex-grow justify-center px-6 py-16"
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Logo + Header */}
-          <Animated.View entering={FadeInUp.duration(700).springify()} className="items-center mb-10">
-            <LinearGradient
-              colors={['#8b7cf6', '#6d5ae6', '#4f3eb3']}
-              start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-              className="w-24 h-24 rounded-[28px] items-center justify-center mb-5 shadow-[0_20px_50px_rgba(139,124,246,0.35)]"
-            >
-              <Sparkles size={42} color="#fff" strokeWidth={2.2} />
-            </LinearGradient>
-            <Text className="text-text-primary dark:text-text-primary dark:text-text-primary-dark text-[2rem] font-extrabold tracking-tight">Create Account</Text>
-            <Text className="text-text-secondary dark:text-text-secondary-dark text-[15px] mt-2 tracking-wide">Join MotoTrack AI today</Text>
+          {/* Logo */}
+          <Animated.View entering={FadeInUp.duration(600)} className="items-center mb-8">
+            <View className="w-20 h-20 rounded-3xl items-center justify-center mb-5 shadow-[0_12px_40px_rgba(139,124,246,0.45)] bg-gradient-to-br from-[#8b7cf6] to-[#4f3eb3]">
+              <Sparkles size={36} color="#fff" strokeWidth={2.2} />
+            </View>
+            <Text className="text-text-primary dark:text-white text-[2rem] font-extrabold tracking-tight leading-tight">Create Account</Text>
+            <Text className="text-text-secondary dark:text-white/60 text-[15px] mt-1.5 tracking-wide">Join MotoTrack AI today</Text>
           </Animated.View>
 
-          {/* Form */}
-          <Animated.View entering={FadeInDown.duration(700).delay(150).springify()} className="space-y-4">
-            {/* Full Name */}
-            <View className="relative">
-              <View className="absolute left-4 top-3.5 z-10"><User size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} /></View>
-              <Controller
-                control={control} name="fullName"
-                render={({ field: { onChange, onBlur, value } }) => (
+          {/* Glass card */}
+          <Animated.View entering={FadeInUp.duration(600).delay(120)} className="rounded-3xl p-7 mb-5" style={{
+            backgroundColor: isDark ? 'rgba(18,18,30,0.65)' : 'rgba(255,255,255,0.72)',
+            borderWidth: 1,
+            borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.70)',
+            shadowColor: '#8b7cf6',
+            shadowOffset: { width: 0, height: 12 },
+            shadowOpacity: isDark ? 0.25 : 0.12,
+            shadowRadius: 30,
+          }}>
+            <Text className="text-text-primary dark:text-white text-xl font-extrabold mb-0.5">Get started</Text>
+            <Text className="text-text-secondary dark:text-white/50 text-sm mb-5">Create your garage profile</Text>
+
+            <View className="space-y-4">
+              {/* Full Name */}
+              <View>
+                <View className="absolute left-4 top-3 z-10"><User size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /></View>
+                <Controller control={control} name="fullName" render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    placeholder="Full name" placeholderTextColor={isDark ? '#6b6e80' : '#9ca3af'}
-                    className="bg-card-light dark:bg-card-dark rounded-[18px] pl-11 pr-4 py-[13px] text-text-primary dark:text-text-primary dark:text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
+                    placeholder="Full name" placeholderTextColor={isDark ? '#8b8fa3' : '#6b6b80'}
+                    className={`rounded-xl pl-11 pr-4 py-3.5 text-[15px] border ${isDark ? 'bg-[#0c0a18] text-[#e2e0ed] border-white/10 focus:border-[#8b7cf6]/70' : 'bg-[#f8f6f2] text-[#0f172a] border-[#0f172a]/8 focus:border-[#8b7cf6]/60'}`}
                     autoCapitalize="words" value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
                     data-cy="register-name-input"
                   />
-                )}
-              />
-              {errors.fullName && <Text className="text-danger text-xs mt-1.5 ml-1">{errors.fullName.message}</Text>}
-            </View>
+                )} />
+                {errors.fullName && <Text className="text-red-500 text-xs mt-1.5 font-medium">{errors.fullName.message}</Text>}
+              </View>
 
-            {/* Email */}
-            <View className="relative">
-              <View className="absolute left-4 top-3.5 z-10"><Mail size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} /></View>
-              <Controller
-                control={control} name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
+              {/* Email */}
+              <View>
+                <View className="absolute left-4 top-3 z-10"><Mail size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /></View>
+                <Controller control={control} name="email" render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    placeholder="Email address" placeholderTextColor="#6b6e80"
-                    className="bg-card-light dark:bg-card-dark rounded-[18px] pl-11 pr-4 py-[13px] text-text-primary dark:text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
+                    placeholder="Email address" placeholderTextColor={isDark ? '#8b8fa3' : '#6b6b80'}
+                    className={`rounded-xl pl-11 pr-4 py-3.5 text-[15px] border ${isDark ? 'bg-[#0c0a18] text-[#e2e0ed] border-white/10 focus:border-[#8b7cf6]/70' : 'bg-[#f8f6f2] text-[#0f172a] border-[#0f172a]/8 focus:border-[#8b7cf6]/60'}`}
                     keyboardType="email-address" autoCapitalize="none" value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
                     data-cy="register-email-input"
                   />
-                )}
-              />
-              {errors.email && <Text className="text-danger text-xs mt-1.5 ml-1">{errors.email.message}</Text>}
-            </View>
+                )} />
+                {errors.email && <Text className="text-red-500 text-xs mt-1.5 font-medium">{errors.email.message}</Text>}
+              </View>
 
-            {/* Password */}
-            <View className="relative">
-              <View className="absolute left-4 top-3.5 z-10"><Lock size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} /></View>
-              <Controller
-                control={control} name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
+              {/* Password */}
+              <View>
+                <View className="absolute left-4 top-3 z-10"><Lock size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /></View>
+                <Controller control={control} name="password" render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    placeholder="Password" placeholderTextColor="#6b6e80"
-                    className="bg-card-light dark:bg-card-dark rounded-[18px] pl-11 pr-11 py-[13px] text-text-primary dark:text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
+                    placeholder="Password" placeholderTextColor={isDark ? '#8b8fa3' : '#6b6b80'}
+                    className={`rounded-xl pl-11 pr-11 py-3.5 text-[15px] border ${isDark ? 'bg-[#0c0a18] text-[#e2e0ed] border-white/10 focus:border-[#8b7cf6]/70' : 'bg-[#f8f6f2] text-[#0f172a] border-[#0f172a]/8 focus:border-[#8b7cf6]/60'}`}
                     secureTextEntry={!showPassword} autoCapitalize="none" value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
                     data-cy="register-password-input"
                   />
-                )}
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-4 top-3.5" disabled={isLoading} data-cy="register-toggle-password">
-                {showPassword ? <EyeOff size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} /> : <Eye size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} />}
-              </TouchableOpacity>
-              {errors.password && <Text className="text-danger text-xs mt-1.5 ml-1">{errors.password.message}</Text>}
-            </View>
+                )} />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-3" disabled={isLoading} data-cy="register-toggle-password">
+                  {showPassword ? <EyeOff size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /> : <Eye size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} />}
+                </TouchableOpacity>
+                {errors.password && <Text className="text-red-500 text-xs mt-1.5 font-medium">{errors.password.message}</Text>}
 
-            {/* Confirm Password */}
-            <View className="relative">
-              <View className="absolute left-4 top-3.5 z-10"><Lock size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} /></View>
-              <Controller
-                control={control} name="confirmPassword"
-                render={({ field: { onChange, onBlur, value } }) => (
+                {/* Real-time rules */}
+                <View className="mt-2 pt-2 border-t border-white/10 dark:border-white/10">
+                  {rules.map((r, i) => <PasswordRule key={i} met={r.met} label={r.label} />)}
+                </View>
+              </View>
+
+              {/* Confirm */}
+              <View>
+                <View className="absolute left-4 top-3 z-10"><Lock size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /></View>
+                <Controller control={control} name="confirmPassword" render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    placeholder="Confirm password" placeholderTextColor="#6b6e80"
-                    className="bg-card-light dark:bg-card-dark rounded-[18px] pl-11 pr-11 py-[13px] text-text-primary dark:text-text-primary-dark text-[15px] border border-card-elevated focus:border-accent-violet/50"
+                    placeholder="Confirm password" placeholderTextColor={isDark ? '#8b8fa3' : '#6b6b80'}
+                    className={`rounded-xl pl-11 pr-11 py-3.5 text-[15px] border ${isDark ? 'bg-[#0c0a18] text-[#e2e0ed] border-white/10 focus:border-[#8b7cf6]/70' : 'bg-[#f8f6f2] text-[#0f172a] border-[#0f172a]/8 focus:border-[#8b7cf6]/60'}`}
                     secureTextEntry={!showConfirmPassword} autoCapitalize="none" value={value} onChangeText={onChange} onBlur={onBlur} editable={!isLoading}
                     data-cy="register-confirm-password-input"
                   />
-                )}
-              />
-              <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-3.5" disabled={isLoading} data-cy="register-toggle-confirm-password">
-                {showConfirmPassword ? <EyeOff size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} /> : <Eye size={18} color={isDark ? "#8b8fa3" : "#6b6b80"} />}
+                )} />
+                <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3.5 top-3" disabled={isLoading} data-cy="register-toggle-confirm-password">
+                  {showConfirmPassword ? <EyeOff size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} /> : <Eye size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} />}
+                </TouchableOpacity>
+                {errors.confirmPassword && <Text className="text-red-500 text-xs mt-1.5 font-medium">{errors.confirmPassword.message}</Text>}
+              </View>
+
+              <Text className="text-text-secondary-dark text-[12px] text-center mt-1 leading-relaxed">
+                By creating an account, you agree to our <Text className="text-[#8b7cf6]">Terms</Text> and <Text className="text-[#8b7cf6]">Privacy</Text>.
+              </Text>
+
+              <TouchableOpacity onPress={handleSubmit(onRegisterPress)} disabled={isLoading} className="mt-1" data-cy="register-submit">
+                <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-2xl py-3.5 shadow-[0_8px_30px_rgba(139,124,246,0.45)]">
+                  {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-white text-center text-base font-bold tracking-wide">Create Account</Text>}
+                </LinearGradient>
               </TouchableOpacity>
-              {errors.confirmPassword && <Text className="text-danger text-xs mt-1.5 ml-1">{errors.confirmPassword.message}</Text>}
+
+              <GoogleSignInButton label="Sign up with Google" loading={googleLoading} onPress={triggerGoogle} />
             </View>
-
-            {/* Terms */}
-            <Text className="text-text-secondary-dark text-[12px] text-center mt-2 leading-relaxed">
-              By creating an account, you agree to our{' '}
-              <Text className="text-accent-violet/80">Terms of Service</Text> and{' '}
-              <Text className="text-accent-violet/80">Privacy Policy</Text>
-            </Text>
-
-            {/* Register Button */}
-            <TouchableOpacity onPress={handleSubmit(onRegisterPress)} disabled={isLoading} className="mt-3 active:opacity-90" data-cy="register-submit">
-              <LinearGradient colors={['#8b7cf6', '#6d5ae6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="rounded-[18px] py-[14px] shadow-[0_8px_30px_rgba(139,124,246,0.35)]">
-                {isLoading ? <ActivityIndicator color="white" /> : <Text className="text-text-primary dark:text-text-primary-dark text-center text-base font-bold tracking-wide">Create Account</Text>}
-              </LinearGradient>
-            </TouchableOpacity>
-
-            {/* Google Sign In */}
-            <GoogleSignInButton label="Sign up with Google" loading={googleLoading} onPress={triggerGoogle} />
           </Animated.View>
 
-          {/* Divider */}
-          <View className="flex-row items-center my-6">
-            <View className="flex-1 h-px bg-card-elevated dark:bg-card-elevated" />
-            <Text className="text-text-secondary-dark px-4 text-xs font-bold uppercase tracking-[0.15em]">or</Text>
-            <View className="flex-1 h-px bg-card-elevated dark:bg-card-elevated" />
-          </View>
-
-          {/* Login link */}
+          {/* Bottom link */}
           <Animated.View entering={FadeInUp.duration(600).delay(300)} className="items-center">
-            <Text className="text-text-muted-light dark:text-text-muted-dark text-[15px]">Already have an account?</Text>
-            <TouchableOpacity onPress={() => router.back()} disabled={isLoading} className="mt-1" data-cy="register-login-link">
-              <Text className="text-accent-violet text-base font-extrabold">Log In</Text>
+            <Text className="text-text-muted dark:text-white/40 text-[15px]">Already have an account?</Text>
+            <TouchableOpacity onPress={() => router.back()} disabled={isLoading} data-cy="register-login-link">
+              <Text className="text-[#8b7cf6] text-base font-extrabold mt-0.5">Log In</Text>
             </TouchableOpacity>
           </Animated.View>
 
-          <View className="h-6" />
+          <View className="h-8" />
         </ScrollView>
-      </LinearGradient>
+      </AuthShell>
     </KeyboardAvoidingView>
   );
 }

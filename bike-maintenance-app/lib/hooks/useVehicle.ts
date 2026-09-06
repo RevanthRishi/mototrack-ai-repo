@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getVehicle, updateVehicle, deleteVehicle } from '@/lib/supabase/queries';
 import { useAuth } from './useAuth';
+import { useUserDataStore } from '@/lib/stores/userDataStore';
 
 export function useVehicle(vehicleId: string) {
   const { user } = useAuth();
@@ -13,18 +14,15 @@ export function useVehicle(vehicleId: string) {
 
 export function useUpdateVehicle(vehicleId: string) {
   const queryClient = useQueryClient();
+  const store = useUserDataStore();
 
   return useMutation({
     mutationFn: async (data: {
-      name?: string;
-      make?: string;
-      model?: string;
-      year?: number;
-      variant?: string;
-      vehicle_type?: string;
-      odometer?: number;
+      name?: string; make?: string; model?: string; year?: number;
+      variant?: string; vehicle_type?: string; odometer?: number;
     }) => updateVehicle(vehicleId, data),
-    onSuccess: () => {
+    onSuccess: (updated) => {
+      store.upsertVehicle(updated);
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
       queryClient.invalidateQueries({ queryKey: ['vehicle', vehicleId] });
     },
@@ -33,10 +31,12 @@ export function useUpdateVehicle(vehicleId: string) {
 
 export function useDeleteVehicle() {
   const queryClient = useQueryClient();
+  const store = useUserDataStore();
 
   return useMutation({
     mutationFn: async (vehicleId: string) => deleteVehicle(vehicleId),
-    onSuccess: () => {
+    onSuccess: (_, vehicleId) => {
+      store.removeVehicle(vehicleId);
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
     },
   });

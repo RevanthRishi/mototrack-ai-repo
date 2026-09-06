@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
+import { useUserDataStore } from '@/lib/stores/userDataStore';
 import { useQuery } from '@tanstack/react-query';
 import { getServiceLogs, ServiceLogRow } from '@/lib/supabase/queries';
-import { useUserDataStore } from '@/lib/stores/userDataStore';
 
 export function useServiceLogs(userId?: string | null) {
+  const store = useUserDataStore();
   const query = useQuery<ServiceLogRow[]>({
     queryKey: ['serviceLogs', userId],
     queryFn: () => getServiceLogs(userId!),
@@ -13,7 +14,13 @@ export function useServiceLogs(userId?: string | null) {
   });
 
   useEffect(() => {
-    if (query.data) useUserDataStore.getState().setServiceLogs(query.data);
+    store.setLoading('serviceLogs', query.isLoading);
+    if (query.error) store.setError('serviceLogs', (query.error as Error).message);
+    else if (query.data !== undefined) store.setError('serviceLogs', null);
+  }, [query.isLoading, query.error, query.data]);
+
+  useEffect(() => {
+    if (query.data) store.setServiceLogs(query.data);
   }, [query.data]);
 
   return {

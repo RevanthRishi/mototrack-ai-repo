@@ -1,5 +1,7 @@
 import React from 'react';
 import { useVehicles } from '@/lib/hooks/useVehicles';
+import { useFuelLogs } from '@/lib/hooks/useFuelLogs';
+import { useServiceLogs } from '@/lib/hooks/useServiceLogs';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingState';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
@@ -14,6 +16,9 @@ export default function GarageScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const { vehicles, loading, error, refresh } = useVehicles(user?.id ?? null);
+  // Fetch fuel and service in Garage tab only — other tabs read from store
+  useFuelLogs(user?.id ?? null);
+  useServiceLogs(user?.id ?? null);
 
   const heroGradient = useThemedGradient(THEME_GRADIENTS.heroGarage.light, THEME_GRADIENTS.heroGarage.dark);
   const sheen = useThemedSheen('violet');

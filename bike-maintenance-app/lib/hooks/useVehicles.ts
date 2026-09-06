@@ -4,6 +4,7 @@ import { getVehicles, VehicleRow } from '@/lib/supabase/queries';
 import { useUserDataStore } from '@/lib/stores/userDataStore';
 
 export function useVehicles(userId?: string | null) {
+  const store = useUserDataStore();
   const query = useQuery<VehicleRow[]>({
     queryKey: ['vehicles', userId],
     queryFn: () => getVehicles(userId!),
@@ -13,7 +14,13 @@ export function useVehicles(userId?: string | null) {
   });
 
   useEffect(() => {
-    if (query.data) useUserDataStore.getState().setVehicles(query.data);
+    store.setLoading('vehicles', query.isLoading);
+    if (query.error) store.setError('vehicles', (query.error as Error).message);
+    else if (query.data !== undefined) store.setError('vehicles', null);
+  }, [query.isLoading, query.error, query.data]);
+
+  useEffect(() => {
+    if (query.data) store.setVehicles(query.data);
   }, [query.data]);
 
   return {
