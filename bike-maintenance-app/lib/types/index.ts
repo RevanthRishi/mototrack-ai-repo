@@ -74,4 +74,6 @@ export type {
   VehicleRow, FuelLogRow, ServiceLogRow, UserRow,
   SignInPayload, SignUpPayload, AuthResult, ResetPasswordPayload,
   AddVehiclePayload, UpdateVehiclePayload, UpdateProfilePayload,
+  AddFuelLogPayload, UpdateFuelLogPayload,
+  AddServiceLogPayload, UpdateServiceLogPayload,
 } from './payloads';

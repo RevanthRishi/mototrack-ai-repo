@@ -80,6 +80,29 @@ export async function getFuelLogs(userId: string): Promise<FuelLogRow[]> {
   return ((data ?? []) as any[]).map((r) => ({ ...r, liters: r.quantity }));
 }
 
+export async function insertFuelLog(data: {
+  user_id: string;
+  vehicle_id: string;
+  date: string;
+  quantity: number;
+  cost: number;
+  odometer: number;
+  notes?: string | null;
+}): Promise<FuelLogRow> {
+  const { data: result, error } = await getSupabase()
+    .from('fuel_logs')
+    .insert(data)
+    .select()
+    .single();
+  if (error) throw error;
+  return { ...(result as any), liters: (result as any)?.quantity };
+}
+
+export async function deleteFuelLog(logId: string): Promise<void> {
+  const { error } = await getSupabase().from('fuel_logs').delete().eq('id', logId);
+  if (error) throw error;
+}
+
 // ── Service Logs ─────────────────────────────────────────────────────────────
 
 export async function getServiceLogs(userId: string): Promise<ServiceLogRow[]> {
@@ -90,6 +113,29 @@ export async function getServiceLogs(userId: string): Promise<ServiceLogRow[]> {
     .order('date', { ascending: false });
   if (error) throw error;
   return data ?? [];
+}
+
+export async function insertServiceLog(data: {
+  user_id: string;
+  vehicle_id: string;
+  date: string;
+  service_type: string;
+  cost: number;
+  odometer: number;
+  notes?: string | null;
+}): Promise<ServiceLogRow> {
+  const { data: result, error } = await getSupabase()
+    .from('service_logs')
+    .insert(data)
+    .select()
+    .single();
+  if (error) throw error;
+  return result;
+}
+
+export async function deleteServiceLog(logId: string): Promise<void> {
+  const { error } = await getSupabase().from('service_logs').delete().eq('id', logId);
+  if (error) throw error;
 }
 
 // ── User Profile ──────────────────────────────────────────────────────────────

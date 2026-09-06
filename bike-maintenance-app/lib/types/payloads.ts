@@ -64,3 +64,43 @@ export interface UpdateProfilePayload {
   volume_unit?: string;
   preferences?: Record<string, unknown>;
 }
+
+// ── Fuel log payloads ───────────────────────────────────────────────────────
+
+export interface AddFuelLogPayload {
+  user_id: string;
+  vehicle_id: string;
+  date: string;
+  quantity: number;        // DB column is `quantity`; UI calls it `liters`
+  cost: number;
+  odometer: number;
+  notes?: string | null;
+}
+
+export interface UpdateFuelLogPayload {
+  date?: string;
+  quantity?: number;
+  cost?: number;
+  odometer?: number;
+  notes?: string | null;
+}
+
+// ── Service log payloads ─────────────────────────────────────────────────────
+
+export interface AddServiceLogPayload {
+  user_id: string;
+  vehicle_id: string;
+  date: string;
+  service_type: string;
+  cost: number;
+  odometer: number;
+  notes?: string | null;
+}
+
+export interface UpdateServiceLogPayload {
+  date?: string;
+  service_type?: string;
+  cost?: number;
+  odometer?: number;
+  notes?: string | null;
+}
