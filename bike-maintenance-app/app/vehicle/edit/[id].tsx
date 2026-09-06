@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, ScrollView, SafeAreaView, Text, Alert } from 'react-native';
-import { ArrowLeft } from 'lucide-react-native';
+import { View, ScrollView, SafeAreaView, Text, Modal, TouchableOpacity } from 'react-native';
+import { ArrowLeft, X } from 'lucide-react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -61,26 +61,24 @@ export default function EditVehicleScreen() {
     );
   };
 
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
   const handleDelete = () => {
-    Alert.alert('Delete Vehicle', 'Are you sure? This action cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          if (!id) return;
-          deleteMutation.mutate(id, {
-            onSuccess: () => {
-              notify('Vehicle deleted', 'success');
-              router.replace('/(tabs)');
-            },
-            onError: (err: any) => {
-              notify(err?.message || 'Failed to delete', 'error');
-            },
-          });
-        },
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!id) return;
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        notify('Vehicle deleted', 'success');
+        router.replace('/(tabs)');
       },
-    ]);
+      onError: (err: any) => {
+        notify(err?.message || 'Failed to delete', 'error');
+      },
+    });
+    setDeleteConfirmOpen(false);
   };
 
   const handleBack = () => {
@@ -139,6 +137,41 @@ export default function EditVehicleScreen() {
         </View>
 
         <View className="h-12" />
+
+        {/* Delete Confirmation Modal */}
+        <Modal visible={deleteConfirmOpen} transparent animationType="fade" onRequestClose={() => setDeleteConfirmOpen(false)}>
+          <View className={`flex-1 items-center justify-center px-6 ${isDark ? 'bg-black/60' : 'bg-black/30'}`}>
+            <View className={`rounded-3xl p-7 w-full max-w-sm border ${isDark ? 'bg-[#0d0d18] border-white/[0.06]' : 'bg-[#ffffff] border-[rgba(15,23,42,0.08)]'}`}>
+              <View className="flex-row items-center justify-between mb-4">
+                <Text className={`text-lg font-light tracking-tight ${isDark ? 'text-[#e2e0ed]' : 'text-[#0f172a]'}`}>Delete Vehicle</Text>
+                <TouchableOpacity onPress={() => setDeleteConfirmOpen(false)} data-cy="delete-cancel" disabled={deleteMutation.isPending}>
+                  <X size={18} color={isDark ? '#8b8fa3' : '#6b6b80'} />
+                </TouchableOpacity>
+              </View>
+              <Text className={`text-sm font-light mb-6 ${isDark ? 'text-[#6b6b80]' : 'text-[#4b5563]'}`}>
+                Are you sure? This action cannot be undone.
+              </Text>
+              <View className="flex-row gap-3">
+                <TouchableOpacity
+                  onPress={() => setDeleteConfirmOpen(false)}
+                  disabled={deleteMutation.isPending}
+                  className={`flex-1 rounded-2xl py-3.5 items-center ${isDark ? 'bg-[#13131f]' : 'bg-[#e8e9f0]'}`}
+                  data-cy="delete-cancel"
+                >
+                  <Text className={`text-[15px] font-light ${isDark ? 'text-[#e2e0ed]' : 'text-[#0f172a]'}`}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={confirmDelete}
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 bg-danger/10 border border-danger/20 rounded-2xl py-3.5 items-center"
+                  data-cy="delete-confirm"
+                >
+                  <Text className="text-danger text-[15px] font-semibold">{deleteMutation.isPending ? 'Deleting…' : 'Delete'}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
