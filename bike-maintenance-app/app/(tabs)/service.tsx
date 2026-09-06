@@ -1,12 +1,13 @@
-import { useServiceLogs } from '@/lib/hooks/useServiceLogs';
-import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingState';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { useServiceLogs, useUserErrors, useUserLoading } from '@/lib/stores/userDataStore';
+import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingState';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Wrench, Clock, DollarSign } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useThemedGradient, useThemedSheen, THEME_GRADIENTS } from '@/lib/hooks/useThemedGradient';
+import { useQueryClient } from '@tanstack/react-query';
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -16,7 +17,13 @@ function formatDate(iso: string): string {
 
 export default function ServiceScreen() {
   const { user } = useAuth();
-  const { logs, loading, error, refresh } = useServiceLogs(user?.id ?? null);
+  const logs = useServiceLogs();
+  const errors = useUserErrors();
+  const loadingState = useUserLoading();
+  const loading = loadingState.serviceLogs;
+  const error = errors.serviceLogs;
+  const queryClient = useQueryClient();
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['serviceLogs', user?.id] });
   const heroGradient = useThemedGradient(THEME_GRADIENTS.heroService.light, THEME_GRADIENTS.heroService.dark);
   const sheen = useThemedSheen('violet');
 

@@ -1,5 +1,5 @@
-import { useFuelLogs } from '@/lib/hooks/useFuelLogs';
 import { useAuth } from '@/lib/hooks/useAuth';
+import { useFuelLogs, useUserErrors, useUserLoading } from '@/lib/stores/userDataStore';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/LoadingState';
 import { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
@@ -8,6 +8,7 @@ import { Fuel, ChevronRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { useThemedGradient, THEME_GRADIENTS } from '@/lib/hooks/useThemedGradient';
+import { useQueryClient } from '@tanstack/react-query';
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -17,7 +18,13 @@ function formatDate(iso: string): string {
 
 export default function FuelScreen() {
   const { user } = useAuth();
-  const { logs, loading, error, refresh } = useFuelLogs(user?.id ?? null);
+  const logs = useFuelLogs();
+  const errors = useUserErrors();
+  const loadingState = useUserLoading();
+  const loading = loadingState.fuelLogs;
+  const error = errors.fuelLogs;
+  const queryClient = useQueryClient();
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['fuelLogs', user?.id] });
   const heroGradient = useThemedGradient(THEME_GRADIENTS.heroFuel.light, THEME_GRADIENTS.heroFuel.dark);
 
   const stats = useMemo(() => {

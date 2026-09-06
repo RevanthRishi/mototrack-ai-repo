@@ -4,9 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LogOut, Bell, Shield, HelpCircle, Crown, ChevronRight, X } from 'lucide-react-native';
 import { signOut } from '@/lib/utils/auth';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { useVehicles } from '@/lib/hooks/useVehicles';
-import { useFuelLogs } from '@/lib/hooks/useFuelLogs';
-import { useServiceLogs } from '@/lib/hooks/useServiceLogs';
+import { useVehicles, useFuelLogs, useServiceLogs } from '@/lib/stores/userDataStore';
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemedGradient, useThemedSheen, useChromeRibbon, THEME_GRADIENTS } from '@/lib/hooks/useThemedGradient';
@@ -20,9 +18,9 @@ const SETTINGS = [
 
 export default function ProfileScreen() {
   const { user, setLoggingOut: setAuthLoggingOut } = useAuth();
-  const { vehicles } = useVehicles(user?.id ?? null);
-  const { logs: fuelLogs } = useFuelLogs(user?.id ?? null);
-  const { logs: serviceLogs } = useServiceLogs(user?.id ?? null);
+  const vehicles = useVehicles();
+  const fuelLogs = useFuelLogs();
+  const serviceLogs = useServiceLogs();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loggingOut, setLocalLoggingOut] = useState(false);
   const { isDark } = useTheme();
@@ -47,12 +45,12 @@ export default function ProfileScreen() {
     let errorMsg: string | null = null;
     try {
       const signOutPromise = signOut();
-      const timeoutPromise = new Promise<{ error: { message: string } }>((resolve) =>
-        setTimeout(() => resolve({ error: { message: 'Sign out timed out' } }), 3000)
+      const timeoutPromise = new Promise<{ success: boolean; error: string | null; data: null }>((resolve) =>
+        setTimeout(() => resolve({ success: false, error: 'Sign out timed out', data: null }), 3000)
       );
-      const { error } = await Promise.race([signOutPromise, timeoutPromise]);
-      console.log('[LOGOUT] signOut result, error:', error);
-      if (error) errorMsg = error.message;
+      const res = await Promise.race([signOutPromise, timeoutPromise]);
+      console.log('[LOGOUT] signOut result, error:', res.error);
+      if (!res.success) errorMsg = res.error ?? 'Sign out failed';
     } catch (e: any) {
       errorMsg = e?.message ?? 'Sign out failed';
       console.error('Logout error:', e);
