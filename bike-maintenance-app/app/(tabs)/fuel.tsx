@@ -122,7 +122,7 @@ export default function FuelScreen() {
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-7 -mt-5">
         {/* Hero stat — dominant number */}
         <Animated.View entering={FadeInDown.duration(600).delay(100)}>
-          <View className="bg-card-light dark:bg-card-dark rounded-[22px] overflow-hidden mb-6 shadow-[0_4px_20px_rgba(15,23,42,0.06)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] relative">
+          <View className="bg-card-light dark:bg-card-dark rounded-[22px] overflow-hidden mb-6  relative">
             <LinearGradient colors={["rgba(139,124,246,0.03)","transparent 70%"]} start={{x:0,y:1}} end={{x:0,y:0}} className="absolute inset-0" />
             <View className="px-7 pt-8 pb-7">
               <View className="flex-row items-end gap-3 mb-1">
@@ -171,7 +171,7 @@ export default function FuelScreen() {
           >
             <TouchableOpacity
               activeOpacity={0.85}
-              className="bg-card-light dark:bg-card-dark rounded-[18px] border border-border-light dark:border-border-dark px-5 py-5 shadow-[0_4px_16px_rgba(15,23,42,0.05)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+              className="bg-card-light dark:bg-card-dark rounded-[18px] border border-border-light dark:border-border-dark px-5 py-5 "
               data-cy={`fuel-log-item-${log.id}`}
             >
               <View className="flex-row items-center">

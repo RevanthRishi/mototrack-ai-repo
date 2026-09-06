@@ -76,7 +76,10 @@ export default function LoginScreen() {
         >
           {/* Top bar: logo only */}
           <Animated.View entering={FadeIn.duration(400)} className="items-center mb-10">
-            <View className="w-11 h-11 rounded-xl items-center justify-center bg-gradient-to-br from-[#8b7cf6] to-[#4f3eb3] shadow-[0_6px_20px_rgba(139,124,246,.4)]">
+            <View
+              className="w-11 h-11 rounded-xl items-center justify-center bg-gradient-to-br from-[#8b7cf6] to-[#4f3eb3]"
+              style={{ shadowColor: '#8b7cf6', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.4, shadowRadius: 20 }}
+            >
               <Sparkles size={20} color="#fff" strokeWidth={2} />
             </View>
           </Animated.View>
@@ -179,7 +182,8 @@ export default function LoginScreen() {
                   colors={['#8b7cf6', '#6d5ae6']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
-                  className="rounded-2xl py-3.5 flex-row items-center justify-center gap-2 shadow-[0_8px_32px_rgba(139,124,246,.4)]"
+                  className="rounded-2xl py-3.5 flex-row items-center justify-center gap-2"
+                  style={{ shadowColor: '#8b7cf6', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.35, shadowRadius: 30 }}
                 >
                   {isLoading
                     ? <ActivityIndicator color="white" />

@@ -40,7 +40,7 @@ export default function AIMechanicScreen() {
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-7 -mt-5" contentContainerStyle={{ paddingBottom: 120 }}>
         {/* Welcome card */}
         <Animated.View entering={FadeInDown.duration(600).delay(100)}>
-          <View className="bg-card-light dark:bg-card-dark rounded-[24px] border border-border-light dark:border-border-dark mb-6 relative shadow-[0_8px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.45)]">
+          <View className="bg-card-light dark:bg-card-dark rounded-[24px] border border-border-light dark:border-border-dark mb-6 relative ">
             <View className="px-6 py-6">
               <View className="flex-row items-center gap-3 mb-2">
                 <View className="w-10 h-10 rounded-full bg-accent-violet/10 border border-accent-violet/20 items-center justify-center">
@@ -62,7 +62,7 @@ export default function AIMechanicScreen() {
             <TouchableOpacity
               key={t}
               onPress={() => setMsg(t)}
-              className="bg-card-light dark:bg-card-dark rounded-xl border border-border-light dark:border-border-dark px-3 py-2 active:opacity-70 shadow-[0_2px_8px_rgba(15,23,42,0.05)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
+              className="bg-card-light dark:bg-card-dark rounded-xl border border-border-light dark:border-border-dark px-3 py-2 active:opacity-70 "
               data-cy={`ai-symptom-${t.toLowerCase().replace(/\s+/g, '-')}`}
             >
               <Text className="text-accent-violet text-[11px] font-medium">{t}</Text>
@@ -74,7 +74,7 @@ export default function AIMechanicScreen() {
         <View className="space-y-3">
           {messages.map((m) => (
             <View key={m.id} className={`flex-row ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <View className={`max-w-[82%] rounded-2xl px-4 py-3.5 ${m.from === 'user' ? 'bg-accent-violet/15 border border-accent-violet/20' : 'bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark shadow-[0_4px_12px_rgba(15,23,42,0.05)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3)]'}`}>
+              <View className={`max-w-[82%] rounded-2xl px-4 py-3.5 ${m.from === 'user' ? 'bg-accent-violet/15 border border-accent-violet/20' : 'bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark '}`}>
                 <Text className={`text-[14px] leading-relaxed font-light ${m.from === 'user' ? 'text-white' : 'text-text-primary dark:text-text-primary-dark'}`}>
                   {m.text}
                 </Text>

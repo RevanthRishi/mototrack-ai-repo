@@ -14,7 +14,7 @@ export default function RemindersScreen() {
 
   return (
     <ScrollView className="flex-1 bg-canvas-light dark:bg-canvas-dark px-5 pt-6" contentContainerClassName="pb-10">
-      <LinearGradient colors={['#8b7cf6', '#6d5ae6']} className="rounded-3xl p-6 mb-6 shadow-[0_8px_30px_rgba(139,124,246,0.3)]">
+      <LinearGradient colors={['#8b7cf6', '#6d5ae6']} className="rounded-3xl p-6 mb-6">
         <Bell size={28} color="#fff" strokeWidth={1.5} />
         <Text className="text-white text-xl font-extrabold mt-3">Reminders</Text>
         <Text className="text-text-secondary-dark text-sm mt-1">Odometer-based service alerts</Text>

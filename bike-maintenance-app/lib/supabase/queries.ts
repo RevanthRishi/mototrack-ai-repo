@@ -70,14 +70,23 @@ export async function insertVehicle(data: {
 // ── Fuel Logs ─────────────────────────────────────────────────────────────────
 
 export async function getFuelLogs(userId: string): Promise<FuelLogRow[]> {
+  // Get vehicle IDs for this user
+  const { data: vehicles, error: vErr } = await getSupabase()
+    .from('vehicles')
+    .select('id')
+    .eq('user_id', userId);
+  if (vErr) throw vErr;
+  if (!vehicles?.length) return [];
+
+  const vehicleIds = vehicles.map((v) => v.id);
   const { data, error } = await getSupabase()
     .from('fuel_logs')
-    .select('id, date, quantity, cost, odometer, notes, vehicle_id, user_id, created_at')
-    .eq('user_id', userId)
+    .select('id, date, quantity, cost, odometer, notes, vehicle_id, created_at')
+    .in('vehicle_id', vehicleIds)
     .order('date', { ascending: false });
   if (error) throw error;
   // DB column is `quantity`; expose as `liters` for UI consistency
-  return ((data ?? []) as any[]).map((r) => ({ ...r, liters: r.quantity }));
+  return ((data ?? []) as unknown as FuelLogRow[]).map((r) => ({ ...r, liters: r.quantity }));
 }
 
 export async function insertFuelLog(data: {
@@ -106,10 +115,18 @@ export async function deleteFuelLog(logId: string): Promise<void> {
 // ── Service Logs ─────────────────────────────────────────────────────────────
 
 export async function getServiceLogs(userId: string): Promise<ServiceLogRow[]> {
+  const { data: vehicles, error: vErr } = await getSupabase()
+    .from('vehicles')
+    .select('id')
+    .eq('user_id', userId);
+  if (vErr) throw vErr;
+  if (!vehicles?.length) return [];
+
+  const vehicleIds = vehicles.map((v) => v.id);
   const { data, error } = await getSupabase()
     .from('service_logs')
     .select('*')
-    .eq('user_id', userId)
+    .in('vehicle_id', vehicleIds)
     .order('date', { ascending: false });
   if (error) throw error;
   return data ?? [];
