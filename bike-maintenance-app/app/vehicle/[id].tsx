@@ -77,7 +77,7 @@ export default function VehicleDetailScreen() {
                   {vehicle.variant ? <Text className="text-accent-violet"> {vehicle.variant}</Text> : null}
                 </Text>
                 <Text className="text-text-muted dark:text-text-muted-dark text-[13px] font-light mt-3">
-                  {vehicle.year}{vehicle.variant ? ` · ${vehicle.variant}` : ''} · {vehicle.odometer?.toLocaleString() ?? '—'} km
+                  {vehicle.year}{vehicle.variant ? ` · ${vehicle.variant}` : ''} · {vehicle.current_odometer?.toLocaleString() ?? vehicle.odometer?.toLocaleString() ?? '—'} km
                 </Text>
               </LinearGradient>
             </View>

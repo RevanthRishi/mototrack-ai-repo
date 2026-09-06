@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { PostgrestError } from '@supabase/supabase-js';
-import { getFuelLogs, FuelLogRow } from '@/lib/supabase/queries';
+import { getFuelLogs } from '@/lib/supabase/queries';
+import { FuelLog } from '@/lib/types';
 import { useUserDataStore } from '@/lib/stores/userDataStore';
 
 function friendlyFuelError(error: PostgrestError): string {
@@ -18,7 +19,7 @@ function friendlyFuelError(error: PostgrestError): string {
 
 export function useFuelLogs(userId?: string | null) {
   const store = useUserDataStore();
-  const query = useQuery<FuelLogRow[], PostgrestError>({
+  const query = useQuery<FuelLog[], PostgrestError>({
     queryKey: ['fuelLogs', userId],
     queryFn: () => getFuelLogs(userId!),
     enabled: !!userId,

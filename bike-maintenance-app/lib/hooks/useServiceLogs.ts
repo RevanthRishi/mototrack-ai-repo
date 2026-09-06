@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { PostgrestError } from '@supabase/supabase-js';
 import { useUserDataStore } from '@/lib/stores/userDataStore';
 import { useQuery } from '@tanstack/react-query';
-import { getServiceLogs, ServiceLogRow } from '@/lib/supabase/queries';
+import { getServiceLogs } from '@/lib/supabase/queries';
+import { ServiceLog } from '@/lib/types';
 
 function friendlyServiceError(error: PostgrestError): string {
   if (error.code === 'PGRST204') return 'Service log column not found — check database schema.';
@@ -18,7 +19,7 @@ function friendlyServiceError(error: PostgrestError): string {
 
 export function useServiceLogs(userId?: string | null) {
   const store = useUserDataStore();
-  const query = useQuery<ServiceLogRow[], PostgrestError>({
+  const query = useQuery<ServiceLog[], PostgrestError>({
     queryKey: ['serviceLogs', userId],
     queryFn: () => getServiceLogs(userId!),
     enabled: !!userId,

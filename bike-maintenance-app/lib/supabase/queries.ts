@@ -1,5 +1,6 @@
 import { getSupabase } from './client';
 import { Database } from './database.types';
+import { Vehicle, FuelLog, ServiceLog, UserProfile } from '@/lib/types';
 
 export type VehicleRow = Database['public']['Tables']['vehicles']['Row'];
 export type FuelLogRow = Database['public']['Tables']['fuel_logs']['Row'];
@@ -8,7 +9,7 @@ export type UserRow = Database['public']['Tables']['users']['Row'];
 
 // ── Vehicles ──────────────────────────────────────────────────────────────────
 
-export async function getVehicle(vehicleId: string): Promise<VehicleRow | null> {
+export async function getVehicle(vehicleId: string): Promise<Vehicle | null> {
   const { data, error } = await getSupabase()
     .from('vehicles')
     .select('*')
@@ -20,8 +21,8 @@ export async function getVehicle(vehicleId: string): Promise<VehicleRow | null> 
 
 export async function updateVehicle(
   vehicleId: string,
-  updates: Partial<Pick<VehicleRow, 'name' | 'make' | 'model' | 'year' | 'variant' | 'vehicle_type' | 'odometer'>>
-): Promise<VehicleRow> {
+  updates: Partial<Pick<Vehicle, 'name' | 'make' | 'model' | 'year' | 'variant' | 'vehicle_type' | 'current_odometer'>>
+): Promise<Vehicle> {
   const { data, error } = await getSupabase()
     .from('vehicles')
     .update({ ...updates, updated_at: new Date().toISOString() })
@@ -57,10 +58,10 @@ export async function insertVehicle(data: {
   name: string;
   year: number;
   odometer: number;
-}): Promise<VehicleRow> {
+}): Promise<Vehicle> {
   const { data: result, error } = await getSupabase()
     .from('vehicles')
-    .insert(data)
+    .insert({ ...data, current_odometer: data.odometer })
     .select()
     .single();
   if (error) throw error;
@@ -97,7 +98,7 @@ export async function insertFuelLog(data: {
   cost: number;
   odometer: number;
   notes?: string | null;
-}): Promise<FuelLogRow> {
+}): Promise<FuelLog> {
   const { data: result, error } = await getSupabase()
     .from('fuel_logs')
     .insert(data)
@@ -140,7 +141,7 @@ export async function insertServiceLog(data: {
   cost: number;
   odometer: number;
   notes?: string | null;
-}): Promise<ServiceLogRow> {
+}): Promise<ServiceLog> {
   const { data: result, error } = await getSupabase()
     .from('service_logs')
     .insert(data)
@@ -158,7 +159,7 @@ export async function deleteServiceLog(logId: string): Promise<void> {
 // ── User Profile ──────────────────────────────────────────────────────────────
 
 /** Fetch user profile + theme in one query. Used by useAuth on sign-in. */
-export async function getProfile(userId: string): Promise<UserRow | null> {
+export async function getProfile(userId: string): Promise<UserProfile | null> {
   const { data, error } = await getSupabase()
     .from('users')
     .select(

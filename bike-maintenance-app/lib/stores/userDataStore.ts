@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { VehicleRow, FuelLogRow, ServiceLogRow, UserRow } from '@/lib/supabase/queries';
+import { Vehicle, FuelLog, ServiceLog, UserProfile } from '@/lib/types';
 
 /**
  * Read-only mirror of TanStack Query cache.
@@ -8,27 +8,27 @@ import { VehicleRow, FuelLogRow, ServiceLogRow, UserRow } from '@/lib/supabase/q
  * so other tabs see the change without re-fetching.
  */
 interface UserData {
-  profile: UserRow | null;
-  vehicles: VehicleRow[];
-  fuelLogs: FuelLogRow[];
-  serviceLogs: ServiceLogRow[];
+  profile: UserProfile | null;
+  vehicles: Vehicle[];
+  fuelLogs: FuelLog[];
+  serviceLogs: ServiceLog[];
   loading: { vehicles: boolean; fuelLogs: boolean; serviceLogs: boolean; profile: boolean };
   errors: { vehicles: string | null; fuelLogs: string | null; serviceLogs: string | null; profile: string | null };
 }
 
 interface UserDataActions {
-  setProfile: (p: UserRow | null) => void;
-  setVehicles: (v: VehicleRow[]) => void;
-  setFuelLogs: (f: FuelLogRow[]) => void;
-  setServiceLogs: (s: ServiceLogRow[]) => void;
+  setProfile: (p: UserProfile | null) => void;
+  setVehicles: (v: Vehicle[]) => void;
+  setFuelLogs: (f: FuelLog[]) => void;
+  setServiceLogs: (s: ServiceLog[]) => void;
   setLoading: (key: keyof UserData['loading'], value: boolean) => void;
   setError: (key: keyof UserData['errors'], value: string | null) => void;
   // Mutation actions — keep store in sync without triggering refetch storms
-  upsertVehicle: (v: VehicleRow) => void;
+  upsertVehicle: (v: Vehicle) => void;
   removeVehicle: (id: string) => void;
-  upsertFuelLog: (f: FuelLogRow) => void;
+  upsertFuelLog: (f: FuelLog) => void;
   removeFuelLog: (id: string) => void;
-  upsertServiceLog: (s: ServiceLogRow) => void;
+  upsertServiceLog: (s: ServiceLog) => void;
   removeServiceLog: (id: string) => void;
   reset: () => void;
 }
