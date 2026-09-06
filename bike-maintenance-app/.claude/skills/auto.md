@@ -12,6 +12,7 @@ These skills run automatically — no command needed. The AI activates them by d
 | Changing `package.json`, `app/*`, `lib/hooks/*` with performance impact | `performance-optimization` | Any change affecting render/query loads |
 | Reviewing code or opening PR | `code-review`, `pr-template`, `test-coverage` | Review process is mandatory before merge |
 | Writing/committing tests | `test-coverage` | Coverage check runs with PR |
+| Starting any new task or `git commit` | `branch-pr` | Every change must flow through a feature branch + PR |
 
 ## Enforced Rules (no override)
 
@@ -25,6 +26,14 @@ These skills run automatically — no command needed. The AI activates them by d
 1. `code-review` — checklist must be completed
 2. `pr-template` — PR description must include skills checklist and coverage
 3. `test-coverage` — >= 90% coverage required, real-time validation confirmed
+
+### Branch / PR Rule (mandatory for every change):
+- Every new task starts a fresh branch: `feat/<name>`, `fix/<name>`, or `chore/<name>`
+- Work happens on that branch; `main` is never edited directly
+- When task completes: push branch → create PR to `main` (not merge direct)
+- PR must include `pr-template.md` filled out (skills checklist + coverage + real-time validation)
+- PR requires CI pass (`.github/workflows/ci.yml`) + 1 approval before merge
+- After merge, delete feature branch; never reuse a feature branch for a different task
 
 ### Every new feature checks:
 1. `code-quality` — naming, no `any`, single purpose
