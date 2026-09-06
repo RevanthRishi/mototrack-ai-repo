@@ -67,7 +67,7 @@ export default function VehicleDetailScreen() {
           </View>
         ) : vehicle ? (
           <Animated.View entering={FadeInUp.duration(700)}>
-            <View className="rounded-[28px] overflow-hidden border border-border-light dark:border-white/[0.08] mb-6 shadow-[0_8px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.45)]">
+            <View className="rounded-[28px] overflow-hidden border border-border-light dark:border-white/[0.08] mb-6 ">
               <LinearGradient colors={featuredGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} className="p-7 relative">
                 <LinearGradient colors={chrome} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} className="absolute top-0 left-0 right-0 h-px" />
                 <Text className="text-accent-violet text-[10px] font-semibold uppercase tracking-[0.3em]">Primary</Text>

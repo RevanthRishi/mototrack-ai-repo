@@ -18,6 +18,10 @@ web-build/
 .env
 .env.local
 .env.development.local
+
+# AI session / memory artifacts (profile isolation, untracked config)
+.claude/memories/
+MEMORY.md
 .env.test.local
 .env.production.local
 
